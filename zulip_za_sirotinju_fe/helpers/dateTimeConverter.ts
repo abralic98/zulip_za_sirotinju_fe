@@ -14,8 +14,6 @@ const months = [
 ]
 
 export const displayDate = (value: Date) => {
-  console.log(value);
-  
   let date;
   if (value instanceof Date) date = value;
   else date = new Date(value);

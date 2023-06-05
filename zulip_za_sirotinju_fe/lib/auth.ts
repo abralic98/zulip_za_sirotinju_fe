@@ -50,6 +50,8 @@ export const authOptions: NextAuthOptions = {
           const me = await getMe();
 
           if (me) {
+            console.log(sessionToken.token);
+            
             return {
               ...me,
               token: sessionToken.token,

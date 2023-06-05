@@ -9,8 +9,6 @@ const requestMiddleware: RequestMiddleware = async (request) => {
   const session = await getSession()
 
   const token = session?.user.token
-  console.log(session,'sesion');
-  
   return {
     ...request,
     headers: { ...request.headers, authorization: `Bearer ${token}` },

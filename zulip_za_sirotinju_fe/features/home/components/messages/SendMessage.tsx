@@ -26,10 +26,10 @@ export const SendMessage = () => {
     });
     try {
       if (res.createMessage) {
-        queryClient.refetchQueries([
-          "getMessagesByRoomId",
-          { roomId: room.activeRoom },
-        ]);
+        // queryClient.refetchQueries([
+        //   "getMessagesByRoomId",
+        //   { roomId: room.activeRoom },
+        // ]);
       }
     } catch {}
   };
