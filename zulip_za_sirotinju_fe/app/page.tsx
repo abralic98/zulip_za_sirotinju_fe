@@ -1,8 +1,8 @@
-import Image from 'next/image'
-import Link from 'next/link'
+import { Switcher } from "@/components/primitives/switcher";
+import { Home } from "@/features/home/Home";
+import Link from "next/link";
 
-export default function Home() {
-  return (
-    <Link href="/login">Login</Link>
-  )
+export default function HomePage() {
+
+  return <Home/>
 }

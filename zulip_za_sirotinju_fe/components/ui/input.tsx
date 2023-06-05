@@ -4,15 +4,18 @@ import { cn } from "@/lib/utils";
 import { Stack } from "../primitives/stack";
 import { Box } from "../primitives/box/box";
 import { FieldError } from "react-hook-form";
+import { Color } from "@/styles/vars/colors";
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
-  label: string;
+  label?: string;
   error?:FieldError | undefined
+  color?: Color
+  background?: Color
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, label, error, ...props }, ref) => {
+  ({ className, type, label, error, color, ...props }, ref) => {
     return (
       <Stack gap={'xs'}>
         <label>{label}</label>
@@ -23,6 +26,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             className
           )}
           ref={ref}
+          color={color}
+          style={{background:props.background}}
           {...props}
         />
         <Box color='red-500'>{error?.message}</Box>

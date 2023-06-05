@@ -1,6 +1,11 @@
-
 mutation createAccount($input: CreateAccountInput!) {
   createAccount(input: $input) {
     id
+  }
+}
+
+mutation createSession($input: CreateSessionInput) {
+  createSession(input: $input) {
+    token
   }
 }

@@ -1,0 +1,30 @@
+query getMessagesByRoomId($roomId: ID) {
+  getMessagesByRoomId(roomId: $roomId) {
+    account {
+      username
+      id
+    }
+    text
+    id
+    insertedAt
+  }
+}
+
+query getRooms {
+  getRooms {
+    id
+    name
+  }
+}
+
+query getMessagesByRoomIdSocket($id: String) {
+  getMessagesByRoomIdSocket(id: $id) {
+    account {
+      username
+      id
+    }
+    text
+    id
+    insertedAt
+  }
+}

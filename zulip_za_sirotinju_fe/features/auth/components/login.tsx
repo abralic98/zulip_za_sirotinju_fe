@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { signIn } from "next-auth/react"
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
@@ -8,9 +8,11 @@ import { Input } from "@/components/ui/input";
 import { FormProvider, useForm } from "react-hook-form";
 import { loginSchema } from "../zod";
 import { Button } from "@/components/ui/button";
-import { useCreateAccountMutation } from "@/src/generated/graphql";
+import { useState } from "react";
+import { routes } from "@/config/routes";
 
 export function Login() {
+  const [loading, setLoading] = useState(false)
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -19,10 +21,20 @@ export function Login() {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof loginSchema>) => {
-    console.log(values);
-
-  };
+  async function onSubmit(values: z.infer<typeof loginSchema>) {
+    setLoading(true)
+    try {
+      await signIn("credentials", {
+        username: values.username,
+        password: values.password,
+        redirect: true,
+        callbackUrl: routes.landing,
+      })
+    } catch {
+      setLoading(false)
+    }
+    setLoading(false)
+  }
 
   return (
     <>
