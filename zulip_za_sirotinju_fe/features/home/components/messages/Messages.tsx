@@ -4,10 +4,8 @@ import { Stack } from "@/components/primitives/stack";
 import { LoaderDots } from "@/components/ui/LoaderDots";
 import { graphqlClient } from "@/lib/graphqlClient";
 import { useGetMessagesByRoomIdQuery } from "@/src/generated/graphql";
-import { useQuery } from "@tanstack/react-query";
 import { gql } from "graphql-request";
 import React, { useEffect } from "react";
-import { useMessageSubscription } from "../../hooks/useMessages";
 import { useRoomStore } from "../../store/store";
 import { SendMessage } from "./SendMessage";
 import { SingleMessage } from "./SingleMessage";
@@ -29,7 +27,6 @@ export const Messages = () => {
   `;
 
   
-  useMessageSubscription();
   if (isFetching) return <LoaderDots />;
   return (
     <Stack
