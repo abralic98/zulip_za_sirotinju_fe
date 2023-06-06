@@ -9,6 +9,7 @@ import { RoomList } from "./RoomList";
 export const Rooms = () => {
   return (
     <Box
+      p={"md"}
       display={"flex"}
       flexDirection="col"
       justifyContent={"between"}
