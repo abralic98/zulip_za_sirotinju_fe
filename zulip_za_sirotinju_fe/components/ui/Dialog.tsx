@@ -1,21 +1,21 @@
-import React, { Dispatch, FC, ReactNode, SetStateAction, useEffect, useRef } from "react";
+import React, { Dispatch, FC, ReactNode, SetStateAction } from "react";
 
 interface Props {
   children: ReactNode;
   open: boolean;
-  setOpen: Dispatch<SetStateAction<boolean>> 
+  setOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-export const Dialog: FC<Props> = ({ children, open, setOpen}) => {
-  const closeDialog = () => {
-    setOpen(false)
+export const Dialog: FC<Props> = ({ children, open, setOpen }) => {
+  const skipChild = (event: React.MouseEvent) => {
+    event.stopPropagation();
   };
 
-  if(!open) return null
+  if (!open) return null;
 
   return (
     <dialog
-      onClick={closeDialog}
+      onClick={() => setOpen(false)}
       style={{
         width: "100vw",
         height: "100vh",
@@ -28,8 +28,7 @@ export const Dialog: FC<Props> = ({ children, open, setOpen}) => {
         left: 0,
       }}
     >
-      {children}
+      <div onClick={skipChild}>{children}</div>
     </dialog>
   );
 };
-

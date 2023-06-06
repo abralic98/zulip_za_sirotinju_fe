@@ -11,14 +11,12 @@ export const CreateNewRoom = () => {
   return (
     <>
       <Button onClick={()=>setOpen(true)} type='button'>CreateNewRoom</Button>
-      {open &&
       <Dialog setOpen={setOpen} open={open}>
         <Box background={'white'} style={{width:'500px', height:'300px'}}>
           <Heading type="h1" color={'white'}>Create New Room</Heading>
           <Input />
         </Box>
       </Dialog>
-       }
     </>
   );
 };
