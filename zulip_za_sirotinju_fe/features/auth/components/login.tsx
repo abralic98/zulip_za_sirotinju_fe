@@ -28,7 +28,7 @@ export function Login() {
         username: values.username,
         password: values.password,
         redirect: true,
-        callbackUrl: routes.landing,
+        callbackUrl: routes.home,
       })
     } catch {
       setLoading(false)

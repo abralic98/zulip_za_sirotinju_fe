@@ -14,7 +14,9 @@ export const SingleRoom: FC<Props> = ({ room }) => {
   if (!room) return null;
   return (
     <Box
-      onClick={() => roomstore.setActiveRoom(room?.id || "")}
+      onClick={() => {
+        roomstore.setActiveRoom(room.id || undefined);
+      }}
       style={{ cursor: "pointer" }}
       onMouseEnter={() => setColor("gray-500")}
       background={color}

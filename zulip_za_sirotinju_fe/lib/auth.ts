@@ -16,12 +16,14 @@ const createSessionMutation = async (input: CreateSessionInput) => {
   const data = await client.request(CreateSessionDocument, {
     input: input,
   });
+  //@ts-ignore
   return data.createSession;
 };
 
 const getMe = async () => {
   try {
     const user = await client.request(MeDocument);
+  //@ts-ignore
     return user.me || null;
   } catch (err: unknown) {
     return null;
