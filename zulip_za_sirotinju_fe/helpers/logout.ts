@@ -4,7 +4,6 @@ import {
   useUpdateAccountStatusMutation,
 } from "@/src/generated/graphql";
 import { signOut, useSession } from "next-auth/react";
-import { LocalStorage } from "./localStorage";
 
 export const useLogout = () => {
   const { data: session, status } = useSession();
