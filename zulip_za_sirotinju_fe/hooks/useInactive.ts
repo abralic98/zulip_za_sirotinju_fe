@@ -6,6 +6,7 @@ import {
   useMeQuery,
   useUpdateAccountStatusMutation,
 } from "@/src/generated/graphql";
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
 const logoutTime = 6 * 1000;
@@ -14,11 +15,12 @@ export const useInactive = () => {
   const [trigger, setTrigger] = useState(true);
   const minute = 1000 * 60;
   const updateStatusMutation = useUpdateAccountStatusMutation(graphqlClient);
-
+  const { data: session, status } = useSession();
   const me = useMeQuery(
     graphqlClient,
     {},
     {
+      enabled:Boolean(session?.user.token),
       onSuccess: (data) => {
         LocalStorage.setItem("zulip-status", String(data.me?.status));
       },
@@ -26,6 +28,7 @@ export const useInactive = () => {
   );
 
   const update = async (status: AccountStatus) => {
+    if(!session?.user.token) return
     if (LocalStorage.getItem("zulip-status") == status) return;
     const res = await updateStatusMutation.mutateAsync({ status: status });
     try {

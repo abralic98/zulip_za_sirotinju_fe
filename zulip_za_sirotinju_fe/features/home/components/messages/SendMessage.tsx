@@ -37,7 +37,7 @@ export const SendMessage = () => {
     <FormProvider {...form}>
       <form onSubmit={form.handleSubmit(submit)}>
         <Switcher alignItems={"center"} width={"full"}>
-          <Input background='white' placeholder="Enter Message" {...form.register("text")} />
+          <Input background='white' color="black" placeholder="Enter Message" {...form.register("text")} />
           <Button style={{ maxWidth: "200px", height: "40px" }}>
             Send Message
           </Button>

@@ -50,14 +50,14 @@ export const CreateNewRoom = () => {
           flexDirection={"col"}
           gap="sm"
         >
-          <Heading type="h1" color={"white"}>
+          <Heading type="h1" color={'white'}>
             Create New Room
           </Heading>
           <FormProvider {...form}>
             <form onSubmit={form.handleSubmit(submit)}>
               <Box display={"flex"} flexDirection="col">
-                <Input label="Room Name" {...form.register("name")} />
-                <Input label="Room Password" {...form.register("password")} />
+                <Input color="white" label="Room Name" {...form.register("name")} />
+                <Input color="white" label="Room Password" {...form.register("password")} />
                 <Box style={{ alignSelf: "flex-end" }}>
                   <Button>Create Room</Button>
                 </Box>

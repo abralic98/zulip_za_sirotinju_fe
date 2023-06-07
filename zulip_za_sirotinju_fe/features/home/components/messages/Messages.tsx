@@ -17,6 +17,7 @@ import * as withAbsintheSocket from "@absinthe/socket";
 import { Socket as PhoenixSocket } from "phoenix";
 import { useSession } from "next-auth/react";
 import { ActiveSockets } from "@/types/socket";
+import { Center } from "@/components/primitives/center";
 
 export const Messages = () => {
   const room = useRoomStore();
@@ -32,7 +33,7 @@ export const Messages = () => {
     { roomId: room.activeRoom || "" },
     {
       enabled: Boolean(room.activeRoom),
-      cacheTime:0,
+      cacheTime: 0,
       select: (m) => m.getMessagesByRoomId,
       onSuccess: (d) => {
         setData2(d || []);
@@ -63,12 +64,11 @@ export const Messages = () => {
     const activeRoomId = activeSubscriptions.some(
       (ac) => ac.notifier.request.variables?.id == room.activeRoom
     );
-    
-    if(activeRoomId){
-      return false
-    }
-    else{
-      return true
+
+    if (activeRoomId) {
+      return false;
+    } else {
+      return true;
     }
   };
 
@@ -76,32 +76,49 @@ export const Messages = () => {
     if (!session?.user.token || !room.activeRoom) return;
     const check = checkIsSubscriptionActive();
 
-    if(!check) return
+    if (!check) return;
     const notifier = withAbsintheSocket.send(absintheSocketInit, {
       operation,
       variables: { id: String(room.activeRoom) },
     });
-    const absintheSocket = withAbsintheSocket.observe(absintheSocketInit, notifier, {
-      onResult: (data) => {
-        //@ts-ignore
-        const kita = data.data
-          .getMessagesByRoomIdSocket as GetMessagesByRoomIdQuery["getMessagesByRoomId"][];
-        if (kita) {
-          setData2((prev: any) => [...prev, kita]);
-        }
-      },
-    });
+    const absintheSocket = withAbsintheSocket.observe(
+      absintheSocketInit,
+      notifier,
+      {
+        onResult: (data) => {
+          //@ts-ignore
+          const kita = data.data
+            .getMessagesByRoomIdSocket as GetMessagesByRoomIdQuery["getMessagesByRoomId"][];
+          if (kita) {
+            setData2((prev: any) => [...prev, kita]);
+          }
+        },
+      }
+    );
     setActiveSubscriptions([
       ...activeSubscriptions,
       {
         notifier: notifier,
         absintheSocket: absintheSocket,
-        observer: notifier.activeObservers[0]
+        observer: notifier.activeObservers[0],
       },
     ]);
   }, [session?.user.token, room.activeRoom]);
 
-  if (isFetching) return <LoaderDots />;
+  if (isFetching)
+    return (
+      <Box display={'flex'} alignItems='center' justifyContent={'center'} width={"1/3"} background="gray-700">
+        <Center> 
+          <LoaderDots width={'50px'} height=''/>
+        </Center>
+      </Box>
+    );
+  if (!room.activeRoom)
+    return (
+      <Box width={"1/3"} background="gray-700" color="white">
+        Join Room
+      </Box>
+    );
   return (
     <Stack
       display={"flex"}

@@ -16,7 +16,7 @@ export const SingleMessage: FC<Props> = ({ message }) => {
     <Box height={"20"}>
       <Cluster justifyContent={'between'} alignItems='center'>
         <Stack>
-          <Heading color="red-500" type="h2">
+          <Heading type="h2">
             {message.account?.username}
           </Heading>
           <Heading color="white" type="h3">

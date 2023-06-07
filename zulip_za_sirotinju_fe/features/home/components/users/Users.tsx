@@ -6,14 +6,18 @@ import React, { useEffect, useState } from "react";
 import * as withAbsintheSocket from "@absinthe/socket";
 //@ts-ignore
 import { Socket as PhoenixSocket } from "phoenix";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { SingleUser } from "./SingleUser";
 import { Heading } from "@/components/ui/Heading";
 import { Stack } from "@/components/primitives/stack";
+import { LogOutIcon } from "lucide-react";
+import { Split } from "@/components/primitives/split";
+import { useLogout } from "@/helpers/logout";
 
 export const Users = () => {
   const { data: session, status } = useSession();
   const [data, setData] = useState<GetAccountsQuery["getAccounts"]>([]);
+  const {logout} = useLogout()
 
   const {} = useGetAccountsQuery(
     graphqlClient,
@@ -72,9 +76,17 @@ export const Users = () => {
   return (
     <Box background={"gray-800"} p="md" color={"white"} height="screen">
       <Stack>
-        <Heading type="h1" color="blue-400">
-          Users
-        </Heading>
+        <Split>
+          <Heading type="h1" color="blue-400">
+            Users
+          </Heading>
+          <Box
+          style={{cursor:'pointer'}}
+          onClick={logout}
+          >
+            <LogOutIcon />
+          </Box>
+        </Split>
         {data?.map((a) => {
           return <SingleUser account={a} key={a?.id} />;
         })}
