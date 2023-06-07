@@ -9,3 +9,9 @@ mutation createSession($input: CreateSessionInput) {
     token
   }
 }
+
+mutation updateAccountStatus($status: AccountStatus){
+  updateAccountStatus(status: $status){
+    status
+  }
+}

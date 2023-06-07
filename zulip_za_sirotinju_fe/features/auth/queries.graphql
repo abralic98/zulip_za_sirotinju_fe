@@ -3,5 +3,6 @@ query me {
     id
     username
     email
+    status
   }
 }

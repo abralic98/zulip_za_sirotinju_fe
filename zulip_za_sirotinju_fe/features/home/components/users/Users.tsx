@@ -27,8 +27,6 @@ export const Users = () => {
     }
   );
 
-  console.log(session);
-
   const absintheSocketInit = withAbsintheSocket.create(
     new PhoenixSocket("ws://localhost:4000/api/graphql/socket", {
       params: {
@@ -61,14 +59,9 @@ export const Users = () => {
           const modifiedData = response.data.getAccounts;
 
           if (modifiedData) {
-            console.log(modifiedData, "modified");
-
             const filter =
               data?.filter((a) => a?.username !== modifiedData.username) || [];
-            console.log(filter, "filter");
-
             const append = [...filter, ...modifiedData];
-            console.log(append, "append");
             setData(append);
           }
         },

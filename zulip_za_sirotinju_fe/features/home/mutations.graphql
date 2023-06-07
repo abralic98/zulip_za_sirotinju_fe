@@ -3,3 +3,9 @@ mutation createMessage($input: CreateMessageInput) {
     id
   }
 }
+
+mutation createRoom($input: CreateRoomInput){
+  createRoom(input: $input){
+    id
+  }
+} 

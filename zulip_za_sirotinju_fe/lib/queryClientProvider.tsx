@@ -1,4 +1,6 @@
 "use client";
+import { Inactivity } from "@/components/Inactivity";
+import { useInactive } from "@/hooks/useInactive";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { SessionProvider } from "next-auth/react";
@@ -20,6 +22,7 @@ export const QueryClientProviderA = ({ children }: { children: ReactNode }) => {
     <SessionProvider>
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools initialIsOpen={false} />
+        <Inactivity />
         {children}
       </QueryClientProvider>
     </SessionProvider>

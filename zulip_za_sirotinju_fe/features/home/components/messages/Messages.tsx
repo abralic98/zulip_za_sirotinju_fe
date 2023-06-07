@@ -87,8 +87,6 @@ export const Messages = () => {
         const kita = data.data
           .getMessagesByRoomIdSocket as GetMessagesByRoomIdQuery["getMessagesByRoomId"][];
         if (kita) {
-          console.log(kita,"KitA JEBENA");
-          
           setData2((prev: any) => [...prev, kita]);
         }
       },

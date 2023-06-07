@@ -200,10 +200,17 @@ export type CreateSessionMutationVariables = Exact<{
 
 export type CreateSessionMutation = { __typename?: 'RootMutationType', createSession?: { __typename?: 'Session', token?: string | null } | null };
 
+export type UpdateAccountStatusMutationVariables = Exact<{
+  status?: InputMaybe<AccountStatus>;
+}>;
+
+
+export type UpdateAccountStatusMutation = { __typename?: 'RootMutationType', updateAccountStatus?: { __typename?: 'Account', status?: AccountStatus | null } | null };
+
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MeQuery = { __typename?: 'RootQueryType', me?: { __typename?: 'Account', id: string, username?: string | null, email?: string | null } | null };
+export type MeQuery = { __typename?: 'RootQueryType', me?: { __typename?: 'Account', id: string, username?: string | null, email?: string | null, status?: AccountStatus | null } | null };
 
 export type CreateMessageMutationVariables = Exact<{
   input?: InputMaybe<CreateMessageInput>;
@@ -211,6 +218,13 @@ export type CreateMessageMutationVariables = Exact<{
 
 
 export type CreateMessageMutation = { __typename?: 'RootMutationType', createMessage?: { __typename?: 'Message', id?: string | null } | null };
+
+export type CreateRoomMutationVariables = Exact<{
+  input?: InputMaybe<CreateRoomInput>;
+}>;
+
+
+export type CreateRoomMutation = { __typename?: 'RootMutationType', createRoom?: { __typename?: 'Room', id?: string | null } | null };
 
 export type GetMessagesByRoomIdQueryVariables = Exact<{
   roomId?: InputMaybe<Scalars['ID']['input']>;
@@ -270,12 +284,33 @@ export const useCreateSessionMutation = <
       (variables?: CreateSessionMutationVariables) => fetcher<CreateSessionMutation, CreateSessionMutationVariables>(client, CreateSessionDocument, variables, headers)(),
       options
     );
+export const UpdateAccountStatusDocument = `
+    mutation updateAccountStatus($status: AccountStatus) {
+  updateAccountStatus(status: $status) {
+    status
+  }
+}
+    `;
+export const useUpdateAccountStatusMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<UpdateAccountStatusMutation, TError, UpdateAccountStatusMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<UpdateAccountStatusMutation, TError, UpdateAccountStatusMutationVariables, TContext>(
+      ['updateAccountStatus'],
+      (variables?: UpdateAccountStatusMutationVariables) => fetcher<UpdateAccountStatusMutation, UpdateAccountStatusMutationVariables>(client, UpdateAccountStatusDocument, variables, headers)(),
+      options
+    );
 export const MeDocument = `
     query me {
   me {
     id
     username
     email
+    status
   }
 }
     `;
@@ -311,6 +346,26 @@ export const useCreateMessageMutation = <
     useMutation<CreateMessageMutation, TError, CreateMessageMutationVariables, TContext>(
       ['createMessage'],
       (variables?: CreateMessageMutationVariables) => fetcher<CreateMessageMutation, CreateMessageMutationVariables>(client, CreateMessageDocument, variables, headers)(),
+      options
+    );
+export const CreateRoomDocument = `
+    mutation createRoom($input: CreateRoomInput) {
+  createRoom(input: $input) {
+    id
+  }
+}
+    `;
+export const useCreateRoomMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<CreateRoomMutation, TError, CreateRoomMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<CreateRoomMutation, TError, CreateRoomMutationVariables, TContext>(
+      ['createRoom'],
+      (variables?: CreateRoomMutationVariables) => fetcher<CreateRoomMutation, CreateRoomMutationVariables>(client, CreateRoomDocument, variables, headers)(),
       options
     );
 export const GetMessagesByRoomIdDocument = `
