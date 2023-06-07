@@ -17,14 +17,10 @@ query getRooms {
   }
 }
 
-query getMessagesByRoomIdSocket($id: String) {
-  getMessagesByRoomIdSocket(id: $id) {
-    account {
-      username
-      id
-    }
-    text
+query getAccounts{
+  getAccounts{
+    username
+    status
     id
-    insertedAt
   }
 }

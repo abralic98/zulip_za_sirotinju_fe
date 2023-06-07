@@ -33,8 +33,16 @@ export type Account = Node & {
   /** The ID of an object */
   id: Scalars['ID']['output'];
   lastName?: Maybe<Scalars['String']['output']>;
+  status?: Maybe<AccountStatus>;
   username?: Maybe<Scalars['String']['output']>;
 };
+
+export enum AccountStatus {
+  Away = 'AWAY',
+  Busy = 'BUSY',
+  Offline = 'OFFLINE',
+  Online = 'ONLINE'
+}
 
 export type CreateAccountInput = {
   email: Scalars['String']['input'];
@@ -88,6 +96,7 @@ export type RootMutationType = {
   createSession?: Maybe<Session>;
   deleteMessage?: Maybe<Message>;
   deleteRoom?: Maybe<Room>;
+  updateAccountStatus?: Maybe<Account>;
   updateMessage?: Maybe<Message>;
   updateRoom?: Maybe<Room>;
 };
@@ -120,6 +129,11 @@ export type RootMutationTypeDeleteMessageArgs = {
 
 export type RootMutationTypeDeleteRoomArgs = {
   id?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type RootMutationTypeUpdateAccountStatusArgs = {
+  status?: InputMaybe<AccountStatus>;
 };
 
 
@@ -157,14 +171,13 @@ export type RootQueryTypeNodeArgs = {
 
 export type RootSubscriptionType = {
   __typename?: 'RootSubscriptionType';
-  getMessagesByRoomIdSocket?: Maybe<Array<Maybe<Message>>>;
+  getAccounts?: Maybe<Array<Maybe<Account>>>;
+  getMessagesByRoomIdSocket?: Maybe<Message>;
 };
 
 
 export type RootSubscriptionTypeGetMessagesByRoomIdSocketArgs = {
-  id: Scalars['String']['input'];
-  limit?: InputMaybe<Scalars['String']['input']>;
-  page?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
 };
 
 export type Session = {
@@ -210,6 +223,11 @@ export type GetRoomsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetRoomsQuery = { __typename?: 'RootQueryType', getRooms?: Array<{ __typename?: 'Room', id?: string | null, name?: string | null } | null> | null };
+
+export type GetAccountsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAccountsQuery = { __typename?: 'RootQueryType', getAccounts?: Array<{ __typename?: 'Account', username?: string | null, status?: AccountStatus | null, id: string } | null> | null };
 
 
 export const CreateAccountDocument = `
@@ -342,5 +360,28 @@ export const useGetRoomsQuery = <
     useQuery<GetRoomsQuery, TError, TData>(
       variables === undefined ? ['getRooms'] : ['getRooms', variables],
       fetcher<GetRoomsQuery, GetRoomsQueryVariables>(client, GetRoomsDocument, variables, headers),
+      options
+    );
+export const GetAccountsDocument = `
+    query getAccounts {
+  getAccounts {
+    username
+    status
+    id
+  }
+}
+    `;
+export const useGetAccountsQuery = <
+      TData = GetAccountsQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: GetAccountsQueryVariables,
+      options?: UseQueryOptions<GetAccountsQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetAccountsQuery, TError, TData>(
+      variables === undefined ? ['getAccounts'] : ['getAccounts', variables],
+      fetcher<GetAccountsQuery, GetAccountsQueryVariables>(client, GetAccountsDocument, variables, headers),
       options
     );

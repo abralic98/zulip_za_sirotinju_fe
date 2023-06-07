@@ -16,17 +16,8 @@ import * as withAbsintheSocket from "@absinthe/socket";
 //@ts-ignore
 import { Socket as PhoenixSocket } from "phoenix";
 import { useSession } from "next-auth/react";
+import { ActiveSockets } from "@/types/socket";
 
-interface ActiveSockets {
-  notifier: withAbsintheSocket.Notifier<
-    {
-      id: string;
-    },
-    {}
-  >;
-  absintheSocket: withAbsintheSocket.AbsintheSocket<{}>;
-  observer: withAbsintheSocket.Observer<{ id: string; }>,
-}
 export const Messages = () => {
   const room = useRoomStore();
   const { data: session, status } = useSession();
@@ -57,10 +48,14 @@ export const Messages = () => {
     })
   );
   const operation = `
-  subscription getMessagesByRoomIdSocket($id: String!) {
+  subscription getMessagesByRoomIdSocket($id: ID!) {
     getMessagesByRoomIdSocket(id: $id) {
-      id
       text
+      id
+      account{
+        username
+      }
+      insertedAt
     }
   }
 `;
@@ -79,9 +74,8 @@ export const Messages = () => {
 
   useEffect(() => {
     if (!session?.user.token || !room.activeRoom) return;
-    console.log(room.activeRoom, "active room");
-
     const check = checkIsSubscriptionActive();
+
     if(!check) return
     const notifier = withAbsintheSocket.send(absintheSocketInit, {
       operation,
@@ -93,7 +87,9 @@ export const Messages = () => {
         const kita = data.data
           .getMessagesByRoomIdSocket as GetMessagesByRoomIdQuery["getMessagesByRoomId"][];
         if (kita) {
-          setData2((prev: any) => [...prev, ...kita]);
+          console.log(kita,"KitA JEBENA");
+          
+          setData2((prev: any) => [...prev, kita]);
         }
       },
     });
@@ -105,7 +101,6 @@ export const Messages = () => {
         observer: notifier.activeObservers[0]
       },
     ]);
-    console.log(absintheSocket);
   }, [session?.user.token, room.activeRoom]);
 
   if (isFetching) return <LoaderDots />;

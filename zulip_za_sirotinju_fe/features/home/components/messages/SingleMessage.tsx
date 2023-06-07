@@ -11,6 +11,7 @@ interface Props {
 }
 export const SingleMessage: FC<Props> = ({ message }) => {
   if (!message) return null;
+  
   return (
     <Box height={"20"}>
       <Cluster justifyContent={'between'} alignItems='center'>
