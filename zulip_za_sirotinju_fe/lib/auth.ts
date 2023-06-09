@@ -23,7 +23,7 @@ const createSessionMutation = async (input: CreateSessionInput) => {
 const getMe = async () => {
   try {
     const user = await client.request(MeDocument);
-  //@ts-ignore
+    //@ts-ignore
     return user.me || null;
   } catch (err: unknown) {
     return null;
@@ -48,6 +48,8 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (sessionToken?.token) {
+          console.log(sessionToken?.token);
+
           client.setHeader("authorization", `Bearer ${sessionToken?.token}`);
           const me = await getMe();
 

@@ -5,8 +5,9 @@ interface Props {
   type: "h1" | "h2" | "h3" | "h4";
   color?: Color;
   children: ReactNode;
+  fontWeight?: 'bold' | 'normal' 
 }
-export const Heading: FC<Props> = ({ type, color, children }) => {
+export const Heading: FC<Props> = ({ type, color, children, fontWeight='normal' }) => {
   const heading = () => {
     switch (type) {
       case "h1":
@@ -18,9 +19,10 @@ export const Heading: FC<Props> = ({ type, color, children }) => {
           <h2 className={`text-${color}`}style={{ fontSize: "16px", fontWeight: "bold" }}>{children}</h2>
         );
       case "h3":
-        return <h3 className={`text-${color}`}style={{ fontSize: "14px" }}>{children}</h3>;
+        return <h3 className={`text-${color}`}style={{ fontSize: "14px", fontWeight:fontWeight }}>{children}</h3>;
       case "h4":
-        return <h4 className={`text-${color}`}style={{ fontSize: "12px" }}>{children}</h4>;
+        return <h4 className={`text-${color}`}style={{ fontSize: "12px"}}>{children}</h4>;
+        
 
       default:
         break;

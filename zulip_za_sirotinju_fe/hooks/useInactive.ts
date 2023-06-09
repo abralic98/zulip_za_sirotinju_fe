@@ -13,9 +13,11 @@ const logoutTime = 6 * 1000;
 
 export const useInactive = () => {
   const [trigger, setTrigger] = useState(true);
+  
   const minute = 1000 * 60;
   const updateStatusMutation = useUpdateAccountStatusMutation(graphqlClient);
   const { data: session, status } = useSession();
+  console.log(status, session);
   const me = useMeQuery(
     graphqlClient,
     {},
@@ -30,6 +32,7 @@ export const useInactive = () => {
   const update = async (status: AccountStatus) => {
     if(!session?.user.token) return
     if (LocalStorage.getItem("zulip-status") == status) return;
+    if(LocalStorage.getItem('zulip-status')==='BUSY') return
     const res = await updateStatusMutation.mutateAsync({ status: status });
     try {
       if (res.updateAccountStatus) {
@@ -60,7 +63,7 @@ export const useInactive = () => {
         LocalStorage.clearStorage();
         LocalStorage.setItem("zulip-status", "AWAY");
       }
-    }, minute * 1);
+    }, minute * 0.1);
 
     return () => {
       document.removeEventListener("click", activityListener);

@@ -1,19 +1,38 @@
 import { Box } from "@/components/primitives/box/box";
 import { Cluster } from "@/components/primitives/cluster";
 import { Heading } from "@/components/ui/Heading";
+import { Options } from "@/components/ui/Options";
 import { getStatusColor } from "@/helpers/getStatusColor";
 import { Account } from "@/src/generated/graphql";
-import { FC } from "react";
+import { MoreVertical } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { FC, useState } from "react";
+import { UserOptions } from "./UserOptions";
 
 interface Props {
   account: Account | null;
 }
 export const SingleUser: FC<Props> = ({ account }) => {
+  const { data: session } = useSession();
+  const [dots, setDots] = useState(false);
+  const [options, setOptions] = useState(false);
   if (!account) return null;
   const color = getStatusColor(account.status);
+  const currentAccount = session?.user.id === account.id;
+
   return (
-    <Cluster gap={'xs'} alignItems={'center'}>
-      <Heading type="h3" color="white">
+    <Cluster
+      style={{ position: "relative" }}
+      onMouseEnter={() => currentAccount && setDots(true)}
+      onMouseLeave={() => currentAccount && setDots(false)}
+      gap={"xs"}
+      alignItems={"center"}
+    >
+      <Heading
+        fontWeight={currentAccount ? "bold" : "normal"}
+        type="h3"
+        color="white"
+      >
         {account.username}
       </Heading>
       <Box
@@ -22,6 +41,19 @@ export const SingleUser: FC<Props> = ({ account }) => {
         style={{ borderRadius: "50%" }}
         background={color}
       />
+      {currentAccount && dots && (
+        <Box
+          onClick={() => setOptions(!options)}
+          style={{ cursor: "pointer", right: "5px", position: "absolute" }}
+        >
+          <MoreVertical width={"18px"} />
+        </Box>
+      )}
+      {currentAccount && (
+        <Options open={options} setOpen={setOptions}>
+          <UserOptions />
+        </Options>
+      )}
     </Cluster>
   );
 };
