@@ -33,6 +33,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.44.3",
+    "react-hot-toast": "^2.4.1",
     "subscriptions": "link:@apollo/client/link/subscriptions",
     "tailwind-merge": "^1.13.0",
     "tailwindcss": "3.3.2",

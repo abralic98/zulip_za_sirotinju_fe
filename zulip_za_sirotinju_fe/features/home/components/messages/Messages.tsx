@@ -18,6 +18,7 @@ import { Socket as PhoenixSocket } from "phoenix";
 import { useSession } from "next-auth/react";
 import { ActiveSockets } from "@/types/socket";
 import { Center } from "@/components/primitives/center";
+import toast from "react-hot-toast";
 
 export const Messages = () => {
   const room = useRoomStore();

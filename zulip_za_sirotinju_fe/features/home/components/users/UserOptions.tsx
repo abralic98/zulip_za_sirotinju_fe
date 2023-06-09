@@ -7,17 +7,23 @@ import {
   AccountStatus,
   useUpdateAccountStatusMutation,
 } from "@/src/generated/graphql";
-import React from "react";
+import React, { Dispatch, FC, SetStateAction } from "react";
 
-export const UserOptions = () => {
+interface Props{
+  setOptions: Dispatch<SetStateAction<boolean>>
+}
+export const UserOptions:FC<Props> = ({setOptions}) => {
   const updateAccountStatusMutation =
     useUpdateAccountStatusMutation(graphqlClient);
 
-  const updateStatus = async(status: AccountStatus) => {
-    const res =await updateAccountStatusMutation.mutateAsync({ status: status });
-    if(res.updateAccountStatus){
-        LocalStorage.setItem('zulip-status', "BUSY")
+  const updateStatus = async (status: AccountStatus) => {
+    const res = await updateAccountStatusMutation.mutateAsync({
+      status: status,
+    });
+    if (res.updateAccountStatus) {
+      LocalStorage.setItem("zulip-status", "BUSY");
     }
+    setOptions(false)
   };
 
   return (

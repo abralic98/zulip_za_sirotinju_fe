@@ -51,7 +51,7 @@ export const SingleUser: FC<Props> = ({ account }) => {
       )}
       {currentAccount && (
         <Options open={options} setOpen={setOptions}>
-          <UserOptions />
+          <UserOptions setOptions={setOptions} />
         </Options>
       )}
     </Cluster>
