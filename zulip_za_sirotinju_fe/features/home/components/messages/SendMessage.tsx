@@ -11,13 +11,14 @@ import {
 } from "@/src/generated/graphql";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { useRoomStore } from "../../store/store";
+import { useRoomsStore, useRoomStore } from "../../store/store";
 
 export const SendMessage = () => {
   const form = useForm<CreateMessageInput>();
 
   const sendMessageMutation = useCreateMessageMutation(graphqlClient);
   const room = useRoomStore();
+  const rooms = useRoomsStore();
 
   const submit = async (input: CreateMessageInput) => {
     if (!room.activeRoom) return;
@@ -27,6 +28,17 @@ export const SendMessage = () => {
     try {
       if (res.createMessage) {
         form.reset();
+        const currentRoom = rooms.rooms.find((r) => r.id === room.activeRoom);
+        const updateRoom = rooms.rooms.filter((r) => r.id !== room.activeRoom);
+
+        rooms.setRooms([
+          ...updateRoom,
+          {
+            name: room.activeRoom,
+            id: room.activeRoom,
+            unreadMessages: currentRoom?.unreadMessages || 0 + 1,
+          },
+        ]);
       }
     } catch {}
   };

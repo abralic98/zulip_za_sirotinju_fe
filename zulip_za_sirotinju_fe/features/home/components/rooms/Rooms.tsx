@@ -7,6 +7,7 @@ import { CreateNewRoom } from "./CreateNewRoom";
 import { RoomList } from "./RoomList";
 
 export const Rooms = () => {
+
   return (
     <Box
       p={"md"}

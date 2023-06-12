@@ -3,15 +3,20 @@ import { Box } from "@/components/primitives/box/box";
 import { Room } from "@/src/generated/graphql";
 import { Color } from "@/styles/vars/colors";
 import React, { FC, useState } from "react";
-import { useRoomStore } from "../../store/store";
+import { useRoomsStore, useRoomStore } from "../../store/store";
 
 interface Props {
   room: Room | null;
 }
 export const SingleRoom: FC<Props> = ({ room }) => {
   const roomstore = useRoomStore();
+  const roomsstore = useRoomsStore();
   const [color, setColor] = useState<Color>("gray-500");
   if (!room) return null;
+  const current = roomsstore.rooms.find((r) => r.id === room.id);
+  const number = current?.unreadMessages
+  console.log(current);
+  
   return (
     <Box
       onClick={() => {
@@ -26,7 +31,7 @@ export const SingleRoom: FC<Props> = ({ room }) => {
       alignItems="center"
       p={"xl"}
     >
-      {room.name}
+      {`${room.name} `}
     </Box>
   );
 };
