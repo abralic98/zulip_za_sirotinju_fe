@@ -17,7 +17,7 @@ import { useLogout } from "@/helpers/logout";
 export const Users = () => {
   const { data: session, status } = useSession();
   const [data, setData] = useState<GetAccountsQuery["getAccounts"]>([]);
-  const {logout} = useLogout()
+  const { logout } = useLogout();
 
   const {} = useGetAccountsQuery(
     graphqlClient,
@@ -32,7 +32,9 @@ export const Users = () => {
   );
 
   const absintheSocketInit = withAbsintheSocket.create(
-    new PhoenixSocket("ws://localhost:4000/api/graphql/socket", {
+    // new PhoenixSocket("ws://localhost:4000/api/graphql/socket", {
+
+    new PhoenixSocket(String(process.env.WS_LINK), {
       params: {
         Authorization: `Bearer ${session?.user.token}`,
       },
@@ -80,10 +82,7 @@ export const Users = () => {
           <Heading type="h1" color="blue-400">
             Users
           </Heading>
-          <Box
-          style={{cursor:'pointer'}}
-          onClick={logout}
-          >
+          <Box style={{ cursor: "pointer" }} onClick={logout}>
             <LogOutIcon />
           </Box>
         </Split>

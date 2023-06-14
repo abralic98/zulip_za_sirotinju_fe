@@ -10,7 +10,7 @@ import {
   MeDocument,
 } from "@/src/generated/graphql";
 
-const client = new GraphQLClient("http://localhost:4000/api/graphql");
+const client = new GraphQLClient(process.env.NEXT_PUBLIC_GRAPHQL as string);
 
 const createSessionMutation = async (input: CreateSessionInput) => {
   const data = await client.request(CreateSessionDocument, {

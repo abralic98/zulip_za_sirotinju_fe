@@ -3,7 +3,7 @@ import { getSession } from "next-auth/react"
 
 
 // const endpoint = "http://localhost:4000/api/graphql"
-const endpoint = process.env.NEXT_PUBLIC_GRAPHQL
+const endpoint = process.env.NEXT_PUBLIC_GRAPHQL as string
 
 const requestMiddleware: RequestMiddleware = async (request) => {
   const session = await getSession()

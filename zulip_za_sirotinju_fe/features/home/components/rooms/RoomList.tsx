@@ -38,7 +38,9 @@ export const RoomList = () => {
   );
 
   const absintheSocketInit = withAbsintheSocket.create(
-    new PhoenixSocket("ws://localhost:4000/api/graphql/socket", {
+    // new PhoenixSocket("ws://localhost:4000/api/graphql/socket", {
+
+    new PhoenixSocket(String(process.env.WS_LINK), {
       params: {
         Authorization: `Bearer ${session?.user.token}`,
       },
