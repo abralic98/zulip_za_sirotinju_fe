@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "kurcina": "next build && next start -p 3002",
     "start": "next start",
     "lint": "next lint",
     "types": "graphql-codegen --config codegen.yml"
@@ -16,6 +17,7 @@
     "@radix-ui/react-slot": "^1.0.2",
     "@tanstack/react-query": "^4.29.12",
     "@types/node": "20.2.5",
+    "@types/phoenix": "^1.6.0",
     "@types/react": "18.2.8",
     "@types/react-dom": "18.2.4",
     "autoprefixer": "10.4.14",

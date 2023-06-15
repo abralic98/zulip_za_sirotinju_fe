@@ -5,7 +5,6 @@ import { GetAccountsQuery, useGetAccountsQuery } from "@/src/generated/graphql";
 import React, { useEffect, useState } from "react";
 import * as withAbsintheSocket from "@absinthe/socket";
 //@ts-ignore
-import { Socket as PhoenixSocket } from "phoenix";
 import { signOut, useSession } from "next-auth/react";
 import { SingleUser } from "./SingleUser";
 import { Heading } from "@/components/ui/Heading";
@@ -13,9 +12,11 @@ import { Stack } from "@/components/primitives/stack";
 import { LogOutIcon } from "lucide-react";
 import { Split } from "@/components/primitives/split";
 import { useLogout } from "@/helpers/logout";
+import { useSocket } from "@/hooks/useSocket";
 
 export const Users = () => {
   const { data: session, status } = useSession();
+  const {socket} = useSocket()
   const [data, setData] = useState<GetAccountsQuery["getAccounts"]>([]);
   const { logout } = useLogout();
 
@@ -31,15 +32,6 @@ export const Users = () => {
     }
   );
 
-  const absintheSocketInit = withAbsintheSocket.create(
-    // new PhoenixSocket("ws://localhost:4000/api/graphql/socket", {
-
-    new PhoenixSocket(String(process.env.WS_LINK), {
-      params: {
-        Authorization: `Bearer ${session?.user.token}`,
-      },
-    })
-  );
   const operation = `
   subscription getAccounts{
     getAccounts{
@@ -52,12 +44,13 @@ export const Users = () => {
 
   useEffect(() => {
     if (!session?.user.token) return;
-    const notifier = withAbsintheSocket.send(absintheSocketInit, {
+    if(!socket) return
+    const notifier = withAbsintheSocket.send(socket, {
       operation,
       variables: {},
     });
     const absintheSocket = withAbsintheSocket.observe(
-      absintheSocketInit,
+      socket,
       notifier,
       {
         onResult: (response) => {
@@ -73,7 +66,7 @@ export const Users = () => {
         },
       }
     );
-  }, [session?.user.token]);
+  }, [session?.user.token, socket]);
 
   return (
     <Box background={"gray-800"} p="md" color={"white"} height="screen">
