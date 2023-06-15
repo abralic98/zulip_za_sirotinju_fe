@@ -2,32 +2,21 @@
 import { useEffect, useState } from "react";
 import { useRoomStore } from "../../store/store";
 import * as withAbsintheSocket from "@absinthe/socket";
-//@ts-ignore
-import { Socket as PhoenixSocket } from "phoenix";
 import { useSession } from "next-auth/react";
-import { ActiveSockets } from "@/types/socket";
-import { Center } from "@/components/primitives/center";
 import toast from "react-hot-toast";
+import { useSocket } from "@/hooks/useSocket";
 
 export const Notifications = () => {
   const room = useRoomStore();
-  const { data: session, status } = useSession();
-  const [sound, setSound] = useState<HTMLAudioElement | null>(null)
+  const { data: session } = useSession();
+  const [sound,  setSound] = useState<HTMLAudioElement | null>(null)
+  const {socket} = useSocket()
 
   useEffect(() => {
     // setSound(new Audio('sounds/coin-drop.mp3'))
     setSound(new Audio('sounds/voice.mp3'))
   }, [])
 
-  const absintheSocketInit = withAbsintheSocket.create(
-    // new PhoenixSocket("ws://localhost:4000/api/graphql/socket", {
-
-    new PhoenixSocket(String(process.env.WS_LINK), {
-      params: {
-        Authorization: `Bearer ${session?.user.token}`,
-      },
-    })
-  );
   const operation = `
   subscription notifications {
     notifications {
@@ -47,13 +36,14 @@ export const Notifications = () => {
 
   useEffect(() => {
     if (!session?.user.token) return;
+    if(!socket) return
 
-    const notifier = withAbsintheSocket.send(absintheSocketInit, {
+    const notifier = withAbsintheSocket.send(socket, {
       operation,
       variables: { id: String(room.activeRoom) },
     });
     const absintheSocket = withAbsintheSocket.observe(
-      absintheSocketInit,
+      socket,
       notifier,
       {
         onResult: (data) => {
@@ -69,7 +59,7 @@ export const Notifications = () => {
         },
       }
     );
-  }, [session?.user.token]);
+  }, [session?.user.token, socket]);
 
   return null;
 };

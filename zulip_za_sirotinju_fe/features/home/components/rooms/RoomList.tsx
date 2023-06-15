@@ -8,15 +8,18 @@ import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import { SingleRoom } from "./SingleRoom";
 import * as withAbsintheSocket from "@absinthe/socket";
-//@ts-ignore
 import { Socket as PhoenixSocket } from "phoenix";
 import { useRoomsStore } from "../../store/store";
+import { useSocket } from "@/hooks/useSocket";
 
 export const RoomList = () => {
   const { data: session, status } = useSession();
   const [data, setData] = useState<GetRoomsQuery["getRooms"]>([]);
   const roomsStore = useRoomsStore();
+  const {socket} = useSocket()
 
+  console.log(socket, "SOKEt");
+  
   const { isFetching } = useGetRoomsQuery(
     graphqlClient,
     {},
@@ -35,17 +38,8 @@ export const RoomList = () => {
         roomsStore.setRooms(test);
       },
     }
-  );
+    );
 
-  const absintheSocketInit = withAbsintheSocket.create(
-    // new PhoenixSocket("ws://localhost:4000/api/graphql/socket", {
-
-    new PhoenixSocket(String(process.env.WS_LINK), {
-      params: {
-        Authorization: `Bearer ${session?.user.token}`,
-      },
-    })
-  );
   const operation = `
   subscription getRoomsSubscription{
     getRoomsSubscription{
@@ -57,34 +51,31 @@ export const RoomList = () => {
 
   useEffect(() => {
     if (!session?.user.token) return;
-    const notifier = withAbsintheSocket.send(absintheSocketInit, {
+    if(!socket) return
+    const notifier = withAbsintheSocket.send(socket, {
       operation,
       variables: {},
     });
     const absintheSocket = withAbsintheSocket.observe(
-      absintheSocketInit,
+      socket,
       notifier,
       {
         onResult: (response) => {
           //@ts-ignore
           const modifiedData = response.data.getRoomsSubscription;
-          const rooms = modifiedData.map((r:Room) => {
+          const rooms = modifiedData.map((r: Room) => {
             return {
               name: String(r?.name),
               id: String(r?.id),
               unreadMessages: 0,
             };
           });
-          setData(modifiedData)
+          setData(modifiedData);
           roomsStore.setRooms(modifiedData);
         },
       }
     );
-  }, [session?.user.token]);
-
-  useEffect(() => {
-    console.log(roomsStore.rooms);
-  }, [roomsStore]);
+  }, [session?.user.token, socket]);
 
   if (isFetching) return <LoaderDots />;
   return (
@@ -92,6 +83,7 @@ export const RoomList = () => {
       <Stack gap={"xxs"}>
         {data?.map((r) => {
           return <SingleRoom key={r?.id} room={r} />;
+          // return null
         })}
       </Stack>
     </Box>

@@ -19,10 +19,12 @@ import { useSession } from "next-auth/react";
 import { ActiveSockets } from "@/types/socket";
 import { Center } from "@/components/primitives/center";
 import toast from "react-hot-toast";
+import { useSocket } from "@/hooks/useSocket";
 
 export const Messages = () => {
   const room = useRoomStore();
   const { data: session, status } = useSession();
+  const {socket} =useSocket()
   const [activeSubscriptions, setActiveSubscriptions] = useState<
     ActiveSockets[]
   >([]);
@@ -42,15 +44,6 @@ export const Messages = () => {
     }
   );
 
-  const absintheSocketInit = withAbsintheSocket.create(
-    // new PhoenixSocket("ws://localhost:4000/api/graphql/socket", {
-
-    new PhoenixSocket(String(process.env.WS_LINK), {
-      params: {
-        Authorization: `Bearer ${session?.user.token}`,
-      },
-    })
-  );
   const operation = `
   subscription getMessagesByRoomIdSocket($id: ID!) {
     getMessagesByRoomIdSocket(id: $id) {
@@ -77,15 +70,16 @@ export const Messages = () => {
 
   useEffect(() => {
     if (!session?.user.token || !room.activeRoom) return;
+    if(!socket) return
     const check = checkIsSubscriptionActive();
 
     if (!check) return;
-    const notifier = withAbsintheSocket.send(absintheSocketInit, {
+    const notifier = withAbsintheSocket.send(socket, {
       operation,
       variables: { id: String(room.activeRoom) },
     });
     const absintheSocket = withAbsintheSocket.observe(
-      absintheSocketInit,
+      socket,
       notifier,
       {
         onResult: (data) => {
@@ -106,7 +100,7 @@ export const Messages = () => {
         observer: notifier.activeObservers[0],
       },
     ]);
-  }, [session?.user.token, room.activeRoom]);
+  }, [session?.user.token, room.activeRoom, socket]);
 
   if (isFetching)
     return (
