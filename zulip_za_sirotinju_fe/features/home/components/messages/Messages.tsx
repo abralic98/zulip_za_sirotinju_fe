@@ -1,33 +1,29 @@
 "use client";
 import { Box } from "@/components/primitives/box/box";
 import { Stack } from "@/components/primitives/stack";
-import { LoaderDots } from "@/components/ui/LoaderDots";
-import { graphqlClient } from "@/lib/graphqlClient";
 import { GetMessagesByRoomIdQuery, Message } from "@/src/generated/graphql";
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRoomStore } from "../../store/store";
 import { SendMessage } from "./SendMessage";
 import { SingleMessage } from "./SingleMessage";
 import * as withAbsintheSocket from "@absinthe/socket";
 import { useSession } from "next-auth/react";
 import { ActiveSockets } from "@/types/socket";
-import { Center } from "@/components/primitives/center";
 import { useSocket } from "@/hooks/useSocket";
 import { useMessages } from "./hooks";
 import { usePagination } from "@/hooks/usePagination";
 import { ObservableElement } from "@/components/ObservableElement";
-import { queryClient } from "@/lib/queryClientProvider";
-import { InfiniteData } from "@tanstack/react-query";
 
 export const Messages = () => {
   const room = useRoomStore();
+
   const messagesRef = useRef<HTMLDivElement | null>(null);
   const messageContainerRef = useRef<HTMLDivElement | null>(null);
   const socketMessage = useRef<HTMLDivElement | null>(null);
   const { data: session, status } = useSession();
   const { socket } = useSocket();
-  const [data, setData] = useState<Message[]>([]);
   const { generateRowData, query } = useMessages();
+  const [data, setData] = useState<Message[]>([]);
   const nest = usePagination(query, messagesRef);
   const [activeSubscriptions, setActiveSubscriptions] = useState<
     ActiveSockets[]
@@ -56,6 +52,7 @@ export const Messages = () => {
       return true;
     }
   };
+  console.log(data, "data");
 
   useEffect(() => {
     if (!session?.user.token || !room.activeRoom) return;
@@ -76,7 +73,10 @@ export const Messages = () => {
           .getMessagesByRoomIdSocket as GetMessagesByRoomIdQuery["getMessagesByRoomId"][];
         if (kita) {
           setData((prev: any) => [...prev, kita]);
-          socketMessage.current?.scrollIntoView();
+          if (messageContainerRef.current) {
+            const height = messageContainerRef.current.offsetHeight;
+            messageContainerRef.current.scroll({ top: height });
+          }
         }
       },
     });
@@ -121,19 +121,19 @@ export const Messages = () => {
         color="white"
       >
         <Box
-          style={{ height: "90vh", overflow: "auto", gap:'20px' }}
+          style={{ height: "90vh", overflow: "auto", gap: "20px" }}
           className="flex flex-col-reverse"
-
         >
+          <Box className="flex flex-col">
+            {data.map((d) => {
+              return <SingleMessage message={d} key={d.text} />;
+            })}
+          </Box>
           {generateRowData()?.map((r) => {
             return <SingleMessage message={r} key={r.text} />;
           })}
           <ObservableElement ref={messagesRef} />
         </Box>
-          {data.map((d) => {
-            return <SingleMessage message={d} key={d.text} />;
-          })}
-        <Box ref={socketMessage} style={{ marginBottom: "50px" }} />
       </Box>
       <SendMessage />
     </Stack>
