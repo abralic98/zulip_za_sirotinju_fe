@@ -15,7 +15,6 @@ export const SingleRoom: FC<Props> = ({ room }) => {
   if (!room) return null;
   const current = roomsstore.rooms.find((r) => r.id === room.id);
   const number = current?.unreadMessages
-  console.log(current);
   
   return (
     <Box

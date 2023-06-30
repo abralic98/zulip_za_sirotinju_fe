@@ -29,7 +29,7 @@ export const usePagination = (
       fetchNextPage();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isIntersecting, isInitialLoading]);
+  }, [isIntersecting, isInitialLoading, ref]);
 };
 
 export const useIntersactionObserver = (

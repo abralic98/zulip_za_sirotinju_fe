@@ -22,6 +22,8 @@ import { InfiniteData } from "@tanstack/react-query";
 export const Messages = () => {
   const room = useRoomStore();
   const messagesRef = useRef<HTMLDivElement | null>(null);
+  const messageContainerRef = useRef<HTMLDivElement | null>(null);
+  const socketMessage = useRef<HTMLDivElement | null>(null);
   const { data: session, status } = useSession();
   const { socket } = useSocket();
   const [data, setData] = useState<Message[]>([]);
@@ -74,7 +76,7 @@ export const Messages = () => {
           .getMessagesByRoomIdSocket as GetMessagesByRoomIdQuery["getMessagesByRoomId"][];
         if (kita) {
           setData((prev: any) => [...prev, kita]);
-          messagesRef.current?.scrollIntoView();
+          socketMessage.current?.scrollIntoView();
         }
       },
     });
@@ -90,7 +92,11 @@ export const Messages = () => {
 
   useEffect(() => {
     setData([]);
-  }, [room.activeRoom]);
+    if (!messageContainerRef.current) return;
+    const height = messageContainerRef.current.offsetHeight;
+
+    messageContainerRef.current.scroll({ top: height });
+  }, [messageContainerRef, query.isFetched]);
 
   if (!room.activeRoom)
     return (
@@ -102,24 +108,32 @@ export const Messages = () => {
     <Stack
       display={"flex"}
       flexDirection="col"
-      justifyContent={"between"}
+      justifyContent={"end"}
       background={"gray-700"}
       height={"screen"}
       width="1/3"
     >
       <Box
+        ref={messageContainerRef}
         p={"xs"}
-        style={{ overflowY: "scroll" }}
-        background="gray-700"
+        // style={{ overflowY: "scroll" }}
+        // background="blue-500"
         color="white"
       >
-        {generateRowData()?.map((r) => {
-          return <SingleMessage message={r} key={r.text} />;
-        })}
-        {data.map((d) => {
-          return <SingleMessage message={d} key={d.text} />;
-        })}
-        <ObservableElement ref={messagesRef} />
+        <Box
+          style={{ height: "90vh", overflow: "auto", gap:'20px' }}
+          className="flex flex-col-reverse"
+
+        >
+          {generateRowData()?.map((r) => {
+            return <SingleMessage message={r} key={r.text} />;
+          })}
+          <ObservableElement ref={messagesRef} />
+        </Box>
+          {data.map((d) => {
+            return <SingleMessage message={d} key={d.text} />;
+          })}
+        <Box ref={socketMessage} style={{ marginBottom: "50px" }} />
       </Box>
       <SendMessage />
     </Stack>
