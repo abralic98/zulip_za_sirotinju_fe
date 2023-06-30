@@ -58,10 +58,7 @@ export const Users = () => {
           const modifiedData = response.data.getAccounts;
 
           if (modifiedData) {
-            const filter =
-              data?.filter((a) => a?.username !== modifiedData.username) || [];
-            const append = [...filter, ...modifiedData];
-            setData(append);
+            setData(modifiedData);
           }
         },
       }

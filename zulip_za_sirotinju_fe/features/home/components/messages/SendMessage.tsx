@@ -25,9 +25,9 @@ export const SendMessage = () => {
     const res = await sendMessageMutation.mutateAsync({
       input: { ...input, roomId: room.activeRoom },
     });
+
     try {
       if (res.createMessage) {
-        form.reset();
         const currentRoom = rooms.rooms.find((r) => r.id === room.activeRoom);
         const updateRoom = rooms.rooms.filter((r) => r.id !== room.activeRoom);
 
@@ -39,6 +39,7 @@ export const SendMessage = () => {
             unreadMessages: currentRoom?.unreadMessages || 0 + 1,
           },
         ]);
+        form.resetField('text');
       }
     } catch {}
   };

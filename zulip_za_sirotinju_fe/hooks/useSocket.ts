@@ -1,5 +1,4 @@
 "use client";
-
 import * as withAbsintheSocket from "@absinthe/socket";
 import { useSession } from "next-auth/react";
 import { Socket as PhoenixSocket } from "phoenix";
@@ -9,16 +8,20 @@ export const useSocket = () => {
   const [socket, setSocket] = useState<withAbsintheSocket.AbsintheSocket>();
   useEffect(() => {
     if (typeof window !== undefined && session?.user.token) {
-      
       const absintheSocketInit = withAbsintheSocket.create(
-        new PhoenixSocket(process.env.WS_LINK || 'ws://116.203.201.51:4000/api/graphql/socket', {
-          params: {
-            Authorization: `Bearer ${session?.user.token}`,
-          },
-        })
+        new PhoenixSocket(
+          // process.env.WS_LINK || "ws://116.203.201.51:4000/api/graphql/socket",
+          process.env.WS_LINK || "ws://localhost:4000/api/graphql/socket",
+          {
+            params: {
+              Authorization: `Bearer ${session?.user.token}`,
+            },
+          }
+        )
       );
       setSocket(absintheSocketInit);
     }
-  }, [session?.user.token ]);
-  return {socket};
+  }, [session?.user.token]);
+
+  return { socket };
 };

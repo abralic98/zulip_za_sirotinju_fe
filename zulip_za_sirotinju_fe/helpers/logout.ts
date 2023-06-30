@@ -24,11 +24,13 @@ export const useLogout = () => {
     } catch {}
   };
   const login = async () => {
-    await updateStatusMutation.mutateAsync({
-      status: AccountStatus.Online,
-    });
-    try {
-    } catch {}
+    setTimeout(async () => {
+      await updateStatusMutation.mutateAsync({
+        status: AccountStatus.Online,
+      });
+      try {
+      } catch {}
+    }, 3000);
   };
 
   return { logout, login };

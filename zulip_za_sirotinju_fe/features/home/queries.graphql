@@ -1,12 +1,22 @@
-query getMessagesByRoomId($roomId: ID) {
-  getMessagesByRoomId(roomId: $roomId) {
-    account {
-      username
-      id
+query getMessagesByRoomId($roomId: ID, $first: Int, $after: String) {
+  getMessagesByRoomId(roomId: $roomId, first: $first, after: $after) {
+    edges {
+      node {
+        account {
+          username
+          id
+        }
+        text
+        insertedAt
+        id
+      }
     }
-    text
-    id
-    insertedAt
+    pageInfo{
+      hasNextPage
+      hasPreviousPage
+      endCursor
+      startCursor
+    }
   }
 }
 
@@ -17,8 +27,8 @@ query getRooms {
   }
 }
 
-query getAccounts{
-  getAccounts{
+query getAccounts {
+  getAccounts {
     username
     status
     id

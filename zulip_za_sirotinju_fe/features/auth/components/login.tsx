@@ -15,11 +15,9 @@ import { Box } from "@/components/primitives/box/box";
 import { Heading } from "@/components/ui/Heading";
 import { Stack } from "@/components/primitives/stack";
 import Link from "next/link";
-import { useLogout } from "@/helpers/logout";
 
 export function Login() {
   const [loading, setLoading] = useState(false);
-  const { login } = useLogout();
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -36,8 +34,6 @@ export function Login() {
         password: values.password,
         redirect: true,
         callbackUrl: routes.app,
-      }).then(() => {
-        login();
       });
     } catch {
       setLoading(false);

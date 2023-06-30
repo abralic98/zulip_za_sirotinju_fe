@@ -11,7 +11,7 @@ interface Props {
 export const SingleRoom: FC<Props> = ({ room }) => {
   const roomstore = useRoomStore();
   const roomsstore = useRoomsStore();
-  const [color, setColor] = useState<Color>("gray-500");
+  const [color, setColor] = useState<Color>("gray-600");
   if (!room) return null;
   const current = roomsstore.rooms.find((r) => r.id === room.id);
   const number = current?.unreadMessages

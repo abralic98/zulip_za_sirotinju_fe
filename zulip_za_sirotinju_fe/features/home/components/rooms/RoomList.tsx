@@ -18,8 +18,6 @@ export const RoomList = () => {
   const roomsStore = useRoomsStore();
   const {socket} = useSocket()
 
-  console.log(socket, "SOKEt");
-  
   const { isFetching } = useGetRoomsQuery(
     graphqlClient,
     {},

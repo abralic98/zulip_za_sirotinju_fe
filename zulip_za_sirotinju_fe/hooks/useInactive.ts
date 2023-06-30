@@ -13,16 +13,15 @@ const logoutTime = 6 * 1000;
 
 export const useInactive = () => {
   const [trigger, setTrigger] = useState(true);
-  
+
   const minute = 1000 * 60;
   const updateStatusMutation = useUpdateAccountStatusMutation(graphqlClient);
   const { data: session, status } = useSession();
-  console.log(status, session);
   const me = useMeQuery(
     graphqlClient,
     {},
     {
-      enabled:Boolean(session?.user.token),
+      enabled: Boolean(session?.user.token),
       onSuccess: (data) => {
         LocalStorage.setItem("zulip-status", String(data.me?.status));
       },
@@ -30,9 +29,9 @@ export const useInactive = () => {
   );
 
   const update = async (status: AccountStatus) => {
-    if(!session?.user.token) return
+    if (!session?.user.token) return;
     if (LocalStorage.getItem("zulip-status") == status) return;
-    if(LocalStorage.getItem('zulip-status')==='BUSY') return
+    if (LocalStorage.getItem("zulip-status") === "BUSY") return;
     const res = await updateStatusMutation.mutateAsync({ status: status });
     try {
       if (res.updateAccountStatus) {
@@ -41,6 +40,9 @@ export const useInactive = () => {
     } catch {}
   };
 
+  useEffect(() => {
+    setTimeout(() => setTrigger(!trigger), 2000);
+  }, []);
   useEffect(() => {
     const activityListener = () => {
       const now = Date.now();

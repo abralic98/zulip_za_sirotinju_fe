@@ -5,10 +5,14 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { AccountWithToken } from "@/types/auth";
 import { routes } from "@/config/routes";
 import {
+  AccountStatus,
   CreateSessionDocument,
   CreateSessionInput,
   MeDocument,
+  UpdateAccountStatusDocument,
 } from "@/src/generated/graphql";
+import { useLogout } from "@/helpers/logout";
+import { Login } from "@/features/auth/components/login";
 
 const client = new GraphQLClient(process.env.NEXT_PUBLIC_GRAPHQL as string);
 
@@ -30,6 +34,16 @@ const getMe = async () => {
   }
 };
 
+const login= async () => {
+  try {
+    const user= await client.request(UpdateAccountStatusDocument, {status: AccountStatus.Online});
+    return user|| null
+
+  } catch (err: unknown) {
+    return null;
+  }
+};
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -46,14 +60,12 @@ export const authOptions: NextAuthOptions = {
           username,
           password,
         });
-
         if (sessionToken?.token) {
-          console.log(sessionToken?.token);
-
           client.setHeader("authorization", `Bearer ${sessionToken?.token}`);
           const me = await getMe();
 
           if (me) {
+            login()
             return {
               ...me,
               token: sessionToken.token,

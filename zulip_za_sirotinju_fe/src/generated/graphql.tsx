@@ -1,6 +1,6 @@
 import { GraphQLClient } from 'graphql-request';
+import { RequestInit } from 'graphql-request/dist/types.dom';
 import { useMutation, useQuery, UseMutationOptions, UseQueryOptions } from '@tanstack/react-query';
-import { RequestInit } from 'next/dist/server/web/spec-extension/request';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -66,18 +66,52 @@ export type CreateSessionInput = {
   username?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type Message = {
+export type Message = Node & {
   __typename?: 'Message';
   account?: Maybe<Account>;
-  id?: Maybe<Scalars['ID']['output']>;
+  /** The ID of an object */
+  id: Scalars['ID']['output'];
   insertedAt?: Maybe<Scalars['Datetime']['output']>;
   room?: Maybe<Room>;
   text?: Maybe<Scalars['String']['output']>;
 };
 
+export type MessageConnection = {
+  __typename?: 'MessageConnection';
+  edges?: Maybe<Array<Maybe<MessageEdge>>>;
+  pageInfo: PageInfo;
+};
+
+export type MessageEdge = {
+  __typename?: 'MessageEdge';
+  cursor?: Maybe<Scalars['String']['output']>;
+  node?: Maybe<Message>;
+};
+
 export type Node = {
   /** The ID of the object. */
   id: Scalars['ID']['output'];
+};
+
+export type Notification = {
+  __typename?: 'Notification';
+  account?: Maybe<Account>;
+  id?: Maybe<Scalars['ID']['output']>;
+  insertedAt?: Maybe<Scalars['Datetime']['output']>;
+  message?: Maybe<Message>;
+  room?: Maybe<Room>;
+};
+
+export type PageInfo = {
+  __typename?: 'PageInfo';
+  /** When paginating forwards, the cursor to continue. */
+  endCursor?: Maybe<Scalars['String']['output']>;
+  /** When paginating forwards, are there more items? */
+  hasNextPage: Scalars['Boolean']['output'];
+  /** When paginating backwards, are there more items? */
+  hasPreviousPage: Scalars['Boolean']['output'];
+  /** When paginating backwards, the cursor to continue. */
+  startCursor?: Maybe<Scalars['String']['output']>;
 };
 
 export type Room = {
@@ -151,7 +185,7 @@ export type RootMutationTypeUpdateRoomArgs = {
 export type RootQueryType = {
   __typename?: 'RootQueryType';
   getAccounts?: Maybe<Array<Maybe<Account>>>;
-  getMessagesByRoomId?: Maybe<Array<Maybe<Message>>>;
+  getMessagesByRoomId?: Maybe<MessageConnection>;
   getRooms?: Maybe<Array<Maybe<Room>>>;
   /** Health check */
   healthCheck?: Maybe<Scalars['Boolean']['output']>;
@@ -161,6 +195,10 @@ export type RootQueryType = {
 
 
 export type RootQueryTypeGetMessagesByRoomIdArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
   roomId?: InputMaybe<Scalars['ID']['input']>;
 };
 
@@ -173,6 +211,8 @@ export type RootSubscriptionType = {
   __typename?: 'RootSubscriptionType';
   getAccounts?: Maybe<Array<Maybe<Account>>>;
   getMessagesByRoomIdSocket?: Maybe<Message>;
+  getRoomsSubscription?: Maybe<Array<Maybe<Room>>>;
+  notifications?: Maybe<Notification>;
 };
 
 
@@ -217,7 +257,7 @@ export type CreateMessageMutationVariables = Exact<{
 }>;
 
 
-export type CreateMessageMutation = { __typename?: 'RootMutationType', createMessage?: { __typename?: 'Message', id?: string | null } | null };
+export type CreateMessageMutation = { __typename?: 'RootMutationType', createMessage?: { __typename?: 'Message', id: string } | null };
 
 export type CreateRoomMutationVariables = Exact<{
   input?: InputMaybe<CreateRoomInput>;
@@ -228,10 +268,12 @@ export type CreateRoomMutation = { __typename?: 'RootMutationType', createRoom?:
 
 export type GetMessagesByRoomIdQueryVariables = Exact<{
   roomId?: InputMaybe<Scalars['ID']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  after?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type GetMessagesByRoomIdQuery = { __typename?: 'RootQueryType', getMessagesByRoomId?: Array<{ __typename?: 'Message', text?: string | null, id?: string | null, insertedAt?: any | null, account?: { __typename?: 'Account', username?: string | null, id: string } | null } | null> | null };
+export type GetMessagesByRoomIdQuery = { __typename?: 'RootQueryType', getMessagesByRoomId?: { __typename?: 'MessageConnection', edges?: Array<{ __typename?: 'MessageEdge', node?: { __typename?: 'Message', text?: string | null, insertedAt?: any | null, id: string, account?: { __typename?: 'Account', username?: string | null, id: string } | null } | null } | null> | null, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, hasPreviousPage: boolean, endCursor?: string | null, startCursor?: string | null } } | null };
 
 export type GetRoomsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -369,15 +411,25 @@ export const useCreateRoomMutation = <
       options
     );
 export const GetMessagesByRoomIdDocument = `
-    query getMessagesByRoomId($roomId: ID) {
-  getMessagesByRoomId(roomId: $roomId) {
-    account {
-      username
-      id
+    query getMessagesByRoomId($roomId: ID, $first: Int, $after: String) {
+  getMessagesByRoomId(roomId: $roomId, first: $first, after: $after) {
+    edges {
+      node {
+        account {
+          username
+          id
+        }
+        text
+        insertedAt
+        id
+      }
     }
-    text
-    id
-    insertedAt
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      endCursor
+      startCursor
+    }
   }
 }
     `;

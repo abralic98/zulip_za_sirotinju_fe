@@ -3,46 +3,33 @@ import { Box } from "@/components/primitives/box/box";
 import { Stack } from "@/components/primitives/stack";
 import { LoaderDots } from "@/components/ui/LoaderDots";
 import { graphqlClient } from "@/lib/graphqlClient";
-import {
-  GetMessagesByRoomIdQuery,
-  useGetMessagesByRoomIdQuery,
-} from "@/src/generated/graphql";
-import { gql } from "graphql-request";
-import React, { useEffect, useState } from "react";
+import { GetMessagesByRoomIdQuery, Message } from "@/src/generated/graphql";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useRoomStore } from "../../store/store";
 import { SendMessage } from "./SendMessage";
 import { SingleMessage } from "./SingleMessage";
 import * as withAbsintheSocket from "@absinthe/socket";
-//@ts-ignore
-import { Socket as PhoenixSocket } from "phoenix";
 import { useSession } from "next-auth/react";
 import { ActiveSockets } from "@/types/socket";
 import { Center } from "@/components/primitives/center";
-import toast from "react-hot-toast";
 import { useSocket } from "@/hooks/useSocket";
+import { useMessages } from "./hooks";
+import { usePagination } from "@/hooks/usePagination";
+import { ObservableElement } from "@/components/ObservableElement";
+import { queryClient } from "@/lib/queryClientProvider";
+import { InfiniteData } from "@tanstack/react-query";
 
 export const Messages = () => {
   const room = useRoomStore();
+  const messagesRef = useRef<HTMLDivElement | null>(null);
   const { data: session, status } = useSession();
-  const {socket} =useSocket()
+  const { socket } = useSocket();
+  const [data, setData] = useState<Message[]>([]);
+  const { generateRowData, query } = useMessages();
+  const nest = usePagination(query, messagesRef);
   const [activeSubscriptions, setActiveSubscriptions] = useState<
     ActiveSockets[]
   >([]);
-  const [data2, setData2] = useState<
-    GetMessagesByRoomIdQuery["getMessagesByRoomId"]
-  >([]);
-  const { data, isFetching } = useGetMessagesByRoomIdQuery(
-    graphqlClient,
-    { roomId: room.activeRoom || "" },
-    {
-      enabled: Boolean(room.activeRoom),
-      cacheTime: 0,
-      select: (m) => m.getMessagesByRoomId,
-      onSuccess: (d) => {
-        setData2(d || []);
-      },
-    }
-  );
 
   const operation = `
   subscription getMessagesByRoomIdSocket($id: ID!) {
@@ -70,28 +57,27 @@ export const Messages = () => {
 
   useEffect(() => {
     if (!session?.user.token || !room.activeRoom) return;
-    if(!socket) return
+    if (!socket) return;
+
     const check = checkIsSubscriptionActive();
+    // messagesRef.current?.scrollIntoView();
 
     if (!check) return;
     const notifier = withAbsintheSocket.send(socket, {
       operation,
       variables: { id: String(room.activeRoom) },
     });
-    const absintheSocket = withAbsintheSocket.observe(
-      socket,
-      notifier,
-      {
-        onResult: (data) => {
-          //@ts-ignore
-          const kita = data.data
-            .getMessagesByRoomIdSocket as GetMessagesByRoomIdQuery["getMessagesByRoomId"][];
-          if (kita) {
-            setData2((prev: any) => [...prev, kita]);
-          }
-        },
-      }
-    );
+    const absintheSocket = withAbsintheSocket.observe(socket, notifier, {
+      onResult: (data) => {
+        //@ts-ignore
+        const kita = data.data
+          .getMessagesByRoomIdSocket as GetMessagesByRoomIdQuery["getMessagesByRoomId"][];
+        if (kita) {
+          setData((prev: any) => [...prev, kita]);
+          messagesRef.current?.scrollIntoView();
+        }
+      },
+    });
     setActiveSubscriptions([
       ...activeSubscriptions,
       {
@@ -102,14 +88,10 @@ export const Messages = () => {
     ]);
   }, [session?.user.token, room.activeRoom, socket]);
 
-  if (isFetching)
-    return (
-      <Box display={'flex'} alignItems='center' justifyContent={'center'} width={"1/3"} background="gray-700">
-        <Center> 
-          <LoaderDots width={'50px'} height=''/>
-        </Center>
-      </Box>
-    );
+  useEffect(() => {
+    setData([]);
+  }, [room.activeRoom]);
+
   if (!room.activeRoom)
     return (
       <Box width={"1/3"} background="gray-700" color="white">
@@ -131,9 +113,13 @@ export const Messages = () => {
         background="gray-700"
         color="white"
       >
-        {data2?.map((m) => {
-          return <SingleMessage message={m} key={m?.id} />;
+        {generateRowData()?.map((r) => {
+          return <SingleMessage message={r} key={r.text} />;
         })}
+        {data.map((d) => {
+          return <SingleMessage message={d} key={d.text} />;
+        })}
+        <ObservableElement ref={messagesRef} />
       </Box>
       <SendMessage />
     </Stack>

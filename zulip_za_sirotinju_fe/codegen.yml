@@ -1,6 +1,6 @@
 overwrite: true
-# schema: 'http://localhost:4000/api/graphql'
-schema: 'http://116.203.201.51:4000/api/graphiql'
+schema: 'http://localhost:4000/api/graphql'
+# schema: 'http://116.203.201.51:4000/api/graphiql'
 documents: "features/**/*.graphql"
 generates:
   src/generated/graphql.tsx:
