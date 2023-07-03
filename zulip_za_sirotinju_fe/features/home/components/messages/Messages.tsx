@@ -38,6 +38,9 @@ export const Messages = () => {
         username
       }
       insertedAt
+      room{
+        id
+      }
     }
   }
 `;
@@ -52,9 +55,10 @@ export const Messages = () => {
       return true;
     }
   };
-  console.log(data, "data");
 
   useEffect(() => {
+    console.log('soba jebena', room.activeRoom);
+    
     if (!session?.user.token || !room.activeRoom) return;
     if (!socket) return;
 
@@ -70,8 +74,11 @@ export const Messages = () => {
       onResult: (data) => {
         //@ts-ignore
         const kita = data.data
-          .getMessagesByRoomIdSocket as GetMessagesByRoomIdQuery["getMessagesByRoomId"][];
-        if (kita) {
+          .getMessagesByRoomIdSocket as Message;
+
+        if (kita && room.activeRoom==kita.room?.id) {
+          console.log(kita, "socket", room.activeRoom);
+          
           setData((prev: any) => [...prev, kita]);
           if (messageContainerRef.current) {
             const height = messageContainerRef.current.offsetHeight;
