@@ -5,6 +5,8 @@ export { default } from "next-auth/middleware";
 export const config = { matcher: ["/app/:path*"] };
 
 export async function middleware(request: NextRequest) {
+  return
+
   const endpoint = process.env.NEXT_PUBLIC_GRAPHQL || "";
 
   const redirect = () =>
