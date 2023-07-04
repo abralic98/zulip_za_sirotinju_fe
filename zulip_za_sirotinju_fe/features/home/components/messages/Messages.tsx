@@ -19,7 +19,6 @@ export const Messages = () => {
 
   const messagesRef = useRef<HTMLDivElement | null>(null);
   const messageContainerRef = useRef<HTMLDivElement | null>(null);
-  const socketMessage = useRef<HTMLDivElement | null>(null);
   const { data: session, status } = useSession();
   const { socket } = useSocket();
   const { generateRowData, query } = useMessages();
@@ -44,29 +43,10 @@ export const Messages = () => {
     }
   }
 `;
-  const checkIsSubscriptionActive = () => {
-    const activeRoomId = activeSubscriptions.some(
-      (ac) => ac.notifier.request.variables?.id == room.activeRoom
-    );
-
-    if (activeRoomId) {
-      return false;
-    } else {
-      return true;
-    }
-  };
 
   useEffect(() => {
     if (!session?.user.token || !room.activeRoom) return;
     if (!socket) return;
-
-    let prevNotifier = null;
-    let prevAbsintheSocket = null;
-    let prevObserver = null;
-    // const check = checkIsSubscriptionActive();
-    // messagesRef.current?.scrollIntoView();
-
-    // if (!check) return;
     const notifier = withAbsintheSocket.send(socket, {
       operation,
       variables: { id: String(room.activeRoom) },
@@ -75,11 +55,7 @@ export const Messages = () => {
       onResult: (data) => {
         //@ts-ignore
         const kita = data.data.getMessagesByRoomIdSocket as Message;
-
-        // console.log(kita, "KITa", room.activeRoom, "PREV");
         if (kita && String(room.activeRoom) === String(kita.room?.id)) {
-          console.log(kita, "KITa", room.activeRoom);
-
           setData((prev: any) => [...prev, kita]);
           if (messageContainerRef.current) {
             const height = messageContainerRef.current.offsetHeight;
@@ -96,19 +72,10 @@ export const Messages = () => {
         observer: notifier.activeObservers[0],
       },
     ]);
-    prevNotifier = notifier;
-    prevAbsintheSocket = absintheSocket;
-    prevObserver = notifier.activeObservers[0];
-    if (prevNotifier) {
-      withAbsintheSocket.unobserve(
-        prevAbsintheSocket,
-        prevNotifier,
-        prevObserver
-      );
-    }
+    return () => {
+      withAbsintheSocket.cancel(socket, notifier);
+    };
   }, [session?.user.token, room.activeRoom, socket]);
-
-  console.log(room.activeRoom, "AKTIVNA JEBENA SAOba");
 
   useEffect(() => {
     setData([]);
