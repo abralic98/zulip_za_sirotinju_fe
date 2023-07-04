@@ -22,12 +22,10 @@ export const SendMessage = () => {
 
   const submit = async (input: CreateMessageInput) => {
     if (!room.activeRoom) return;
-    console.log(room.activeRoom, "aktiverom");
     const res = await sendMessageMutation.mutateAsync({
       input: { ...input, roomId: room.activeRoom },
     });
 
-    console.log(res, "res");
     try {
       if (res.createMessage) {
         const currentRoom = rooms.rooms.find((r) => r.id === room.activeRoom);
@@ -41,12 +39,9 @@ export const SendMessage = () => {
             unreadMessages: currentRoom?.unreadMessages || 0 + 1,
           },
         ]);
-        console.log('jel uslo');
-        
         form.resetField('text');
       }
     } catch {
-      console.log('XD?');
       
     }
   };

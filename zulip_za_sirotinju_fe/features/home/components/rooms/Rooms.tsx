@@ -2,11 +2,12 @@
 import { Box } from "@/components/primitives/box/box";
 import { Stack } from "@/components/primitives/stack";
 import { Heading } from "@/components/ui/Heading";
-import React from "react";
+import React, { useState } from "react";
 import { CreateNewRoom } from "./CreateNewRoom";
 import { RoomList } from "./RoomList";
 
 export const Rooms = () => {
+  const [showNot, setShowNot] = useState(false);
 
   return (
     <Box

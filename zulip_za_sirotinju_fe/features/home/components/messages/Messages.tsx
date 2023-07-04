@@ -57,15 +57,16 @@ export const Messages = () => {
   };
 
   useEffect(() => {
-    console.log('soba jebena', room.activeRoom);
-    
     if (!session?.user.token || !room.activeRoom) return;
     if (!socket) return;
 
-    const check = checkIsSubscriptionActive();
+    let prevNotifier = null;
+    let prevAbsintheSocket = null;
+    let prevObserver = null;
+    // const check = checkIsSubscriptionActive();
     // messagesRef.current?.scrollIntoView();
 
-    if (!check) return;
+    // if (!check) return;
     const notifier = withAbsintheSocket.send(socket, {
       operation,
       variables: { id: String(room.activeRoom) },
@@ -73,12 +74,12 @@ export const Messages = () => {
     const absintheSocket = withAbsintheSocket.observe(socket, notifier, {
       onResult: (data) => {
         //@ts-ignore
-        const kita = data.data
-          .getMessagesByRoomIdSocket as Message;
+        const kita = data.data.getMessagesByRoomIdSocket as Message;
 
-        if (kita && room.activeRoom==kita.room?.id) {
-          console.log(kita, "socket", room.activeRoom);
-          
+        // console.log(kita, "KITa", room.activeRoom, "PREV");
+        if (kita && String(room.activeRoom) === String(kita.room?.id)) {
+          console.log(kita, "KITa", room.activeRoom);
+
           setData((prev: any) => [...prev, kita]);
           if (messageContainerRef.current) {
             const height = messageContainerRef.current.offsetHeight;
@@ -95,7 +96,19 @@ export const Messages = () => {
         observer: notifier.activeObservers[0],
       },
     ]);
+    prevNotifier = notifier;
+    prevAbsintheSocket = absintheSocket;
+    prevObserver = notifier.activeObservers[0];
+    if (prevNotifier) {
+      withAbsintheSocket.unobserve(
+        prevAbsintheSocket,
+        prevNotifier,
+        prevObserver
+      );
+    }
   }, [session?.user.token, room.activeRoom, socket]);
+
+  console.log(room.activeRoom, "AKTIVNA JEBENA SAOba");
 
   useEffect(() => {
     setData([]);

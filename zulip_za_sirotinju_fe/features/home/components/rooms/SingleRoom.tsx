@@ -12,9 +12,10 @@ export const SingleRoom: FC<Props> = ({ room }) => {
   const roomstore = useRoomStore();
   const roomsstore = useRoomsStore();
   const [color, setColor] = useState<Color>("gray-600");
+  
   if (!room) return null;
   const current = roomsstore.rooms.find((r) => r.id === room.id);
-  const number = current?.unreadMessages
+  const hasMessages = current?.unreadMessages && current?.unreadMessages>0 ? current.unreadMessages : '' 
   
   return (
     <Box
@@ -30,7 +31,7 @@ export const SingleRoom: FC<Props> = ({ room }) => {
       alignItems="center"
       p={"xl"}
     >
-      {`${room.name} `}
+      {`${room.name} ${hasMessages} `}
     </Box>
   );
 };
