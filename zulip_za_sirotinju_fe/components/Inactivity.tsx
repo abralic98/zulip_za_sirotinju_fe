@@ -3,7 +3,7 @@ import { useInactive } from '@/hooks/useInactive'
 
 export const Inactivity = () => {
 
-  const inactive = useInactive()
+  // const inactive = useInactive()
   return (
     null
   )

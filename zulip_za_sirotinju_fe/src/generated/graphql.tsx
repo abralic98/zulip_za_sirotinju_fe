@@ -1,6 +1,6 @@
 import { GraphQLClient } from 'graphql-request';
+import { RequestInit } from 'graphql-request/dist/types.dom';
 import { useMutation, useQuery, UseMutationOptions, UseQueryOptions } from '@tanstack/react-query';
-import { RequestInit } from 'next/dist/server/web/spec-extension/request';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -44,10 +44,22 @@ export enum AccountStatus {
   Online = 'ONLINE'
 }
 
+export type Avatar = {
+  __typename?: 'Avatar';
+  fileName?: Maybe<Scalars['String']['output']>;
+  filePath?: Maybe<Scalars['String']['output']>;
+  insertedAt?: Maybe<Scalars['Datetime']['output']>;
+};
+
 export type CreateAccountInput = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
   username: Scalars['String']['input'];
+};
+
+export type CreateFileInput = {
+  fileName?: InputMaybe<Scalars['String']['input']>;
+  filePath?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreateMessageInput = {
@@ -133,6 +145,7 @@ export type RootMutationType = {
   updateAccountStatus?: Maybe<Account>;
   updateMessage?: Maybe<Message>;
   updateRoom?: Maybe<Room>;
+  uploadAvatar?: Maybe<Avatar>;
 };
 
 
@@ -180,6 +193,11 @@ export type RootMutationTypeUpdateMessageArgs = {
 export type RootMutationTypeUpdateRoomArgs = {
   id?: InputMaybe<Scalars['ID']['input']>;
   input?: InputMaybe<CreateRoomInput>;
+};
+
+
+export type RootMutationTypeUploadAvatarArgs = {
+  avatar: CreateFileInput;
 };
 
 export type RootQueryType = {
@@ -246,6 +264,13 @@ export type UpdateAccountStatusMutationVariables = Exact<{
 
 
 export type UpdateAccountStatusMutation = { __typename?: 'RootMutationType', updateAccountStatus?: { __typename?: 'Account', status?: AccountStatus | null } | null };
+
+export type UploadAvatarMutationVariables = Exact<{
+  avatar: CreateFileInput;
+}>;
+
+
+export type UploadAvatarMutation = { __typename?: 'RootMutationType', uploadAvatar?: { __typename?: 'Avatar', filePath?: string | null, fileName?: string | null } | null };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -344,6 +369,27 @@ export const useUpdateAccountStatusMutation = <
     useMutation<UpdateAccountStatusMutation, TError, UpdateAccountStatusMutationVariables, TContext>(
       ['updateAccountStatus'],
       (variables?: UpdateAccountStatusMutationVariables) => fetcher<UpdateAccountStatusMutation, UpdateAccountStatusMutationVariables>(client, UpdateAccountStatusDocument, variables, headers)(),
+      options
+    );
+export const UploadAvatarDocument = `
+    mutation uploadAvatar($avatar: CreateFileInput!) {
+  uploadAvatar(avatar: $avatar) {
+    filePath
+    fileName
+  }
+}
+    `;
+export const useUploadAvatarMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<UploadAvatarMutation, TError, UploadAvatarMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<UploadAvatarMutation, TError, UploadAvatarMutationVariables, TContext>(
+      ['uploadAvatar'],
+      (variables?: UploadAvatarMutationVariables) => fetcher<UploadAvatarMutation, UploadAvatarMutationVariables>(client, UploadAvatarDocument, variables, headers)(),
       options
     );
 export const MeDocument = `
