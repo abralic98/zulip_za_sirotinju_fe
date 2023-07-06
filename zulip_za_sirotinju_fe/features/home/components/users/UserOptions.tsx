@@ -1,22 +1,25 @@
 import { Box } from "@/components/primitives/box/box";
 import { Stack } from "@/components/primitives/stack";
+import { Button } from "@/components/ui/button";
 import { Heading } from "@/components/ui/Heading";
-import { routes } from "@/config/routes";
+import { ImageBox } from "@/components/ui/ImageBox";
+import { LoaderDots } from "@/components/ui/LoaderDots";
 import { LocalStorage } from "@/helpers/localStorage";
 import { graphqlClient } from "@/lib/graphqlClient";
 import {
   AccountStatus,
   useUpdateAccountStatusMutation,
 } from "@/src/generated/graphql";
-import { useRouter } from "next/navigation";
 import React, { Dispatch, FC, SetStateAction, useState } from "react";
 import { EditProfile } from "./edit-profile/EditProfile";
+import { useProfile } from "./edit-profile/hooks";
 
 interface Props {
   setOptions: Dispatch<SetStateAction<boolean>>;
 }
 export const UserOptions: FC<Props> = ({ setOptions }) => {
-  const [editProfile, setEditProfile] = useState(false)
+  const [editProfile, setEditProfile] = useState(false);
+  const { isFetchingAvatar, getUserAvatar } = useProfile();
   const updateAccountStatusMutation =
     useUpdateAccountStatusMutation(graphqlClient);
 
@@ -31,17 +34,28 @@ export const UserOptions: FC<Props> = ({ setOptions }) => {
   };
 
   return (
-    <Box background={"white"} style={{ zIndex: 999 }} width={"20"}>
+    <Box
+      background={"white"}
+      style={{ zIndex: 99, position: "relative" }}
+      width={"32"}
+    >
       <Stack background={"gray-700"}>
-        <Box
-          style={{ cursor: "pointer" }}
-          background={"gray-700"}
-          onClick={()=>setEditProfile(true)}
-        >
-          <Heading color="white" fontWeight="bold" type="h3">
-            Edit Profile 
-          </Heading>
-        </Box>
+        <Stack gap={"md"}>
+          {isFetchingAvatar ? (
+            <LoaderDots />
+          ) : (
+            <Box onClick={() => setEditProfile(true)}>
+              <ImageBox
+                width={300}
+                height={300}
+                src={getUserAvatar?.filePath || ""}
+              />
+            </Box>
+          )}
+          <Button onClick={() => setEditProfile(true)} color="white">
+            Edit Profile
+          </Button>
+        </Stack>
         <Box
           style={{ cursor: "pointer" }}
           background={"gray-700"}
@@ -61,7 +75,7 @@ export const UserOptions: FC<Props> = ({ setOptions }) => {
           </Heading>
         </Box>
       </Stack>
-      <EditProfile open={editProfile} setOpen={setEditProfile}/>
+      <EditProfile open={editProfile} setOpen={setEditProfile} />
     </Box>
   );
 };

@@ -47,7 +47,7 @@ export const Notifications = () => {
     });
     const absintheSocket = withAbsintheSocket.observe(socket, notifier, {
       onResult: (data) => {
-        //@ts-ignore
+        // @ts-ignore
         const kita = data.data.notifications;
         if (kita?.account.id == session.user.id) return;
         if (kita) {

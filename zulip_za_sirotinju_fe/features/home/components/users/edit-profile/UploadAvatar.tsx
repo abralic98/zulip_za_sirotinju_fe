@@ -10,12 +10,17 @@ import { useSession } from "next-auth/react";
 import { useUploadAvatarMutation } from "@/src/generated/graphql";
 import { graphqlClient } from "@/lib/graphqlClient";
 import { Button } from "@/components/ui/button";
+import toast from "react-hot-toast";
+import { queryClient } from "@/lib/queryClientProvider";
+import { useProfile } from "./hooks";
+import { ImageBox } from "@/components/ui/ImageBox";
 
 export const UploadAvatar = () => {
   const { data: session, status } = useSession();
   const [hover, setHover] = useState(false);
-  const [files, setFiles] = useState<FileList | null>(null)
+  const [files, setFiles] = useState<FileList | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { getUserAvatar } = useProfile();
   const [progresspercent, setProgresspercent] = useState(0);
   const updateAvatar = useUploadAvatarMutation(graphqlClient);
 
@@ -24,8 +29,8 @@ export const UploadAvatar = () => {
   };
 
   const handleSubmit = () => {
-    console.log('kita', files);
-    
+    console.log("kita", files);
+
     if (!files) return;
     const file = files[0];
     const fileName = file.name;
@@ -59,10 +64,11 @@ export const UploadAvatar = () => {
             {
               onSuccess: () => {
                 setProgresspercent(0);
+                queryClient.refetchQueries(["getUserAvatar", {}]);
               },
               onError: () => {
-                alert("Ime slike postoji");
                 setProgresspercent(0);
+                toast.error("Avatar allready Exists");
               },
             }
           );
@@ -70,8 +76,7 @@ export const UploadAvatar = () => {
       }
     );
   };
-  console.log(files);
-  
+
   return (
     <Stack>
       <Box
@@ -88,7 +93,11 @@ export const UploadAvatar = () => {
         }}
         className="bg-gray-800"
       >
-        <UserIcon width={"150px"} height="150px" color="white" />
+        {getUserAvatar?.filePath ? (
+          <ImageBox width={300} height={300} src={getUserAvatar.filePath} />
+        ) : (
+          <UserIcon width={"150px"} height="150px" color="white" />
+        )}
         {hover && (
           <Box
             onClick={handleClick}
@@ -110,7 +119,7 @@ export const UploadAvatar = () => {
                 Upload Avatar
               </Heading>
             </Box>
-            {/* <input
+            <input
               ref={fileInputRef}
               style={{
                 position: "absolute",
@@ -120,20 +129,16 @@ export const UploadAvatar = () => {
                 overflow: "hidden",
                 cursor: "pointer",
               }}
-              onChange={(e)=>{
+              onChange={(e) => {
                 console.log(e.target.files);
-                
+                setFiles(e.target.files)
               }}
               type={"file"}
-              /> */}
-            <input type="file" onChange={(e)=>{
-              setFiles(e.target.files)
-
-            }} />
+            />
           </Box>
         )}
       </Box>
-        <Button onClick={handleSubmit}>Submit</Button>
+      <Button onClick={handleSubmit}>Submit</Button>
     </Stack>
   );
 };

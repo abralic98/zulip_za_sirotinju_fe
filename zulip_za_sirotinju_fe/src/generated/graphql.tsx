@@ -1,6 +1,6 @@
 import { GraphQLClient } from 'graphql-request';
-import { RequestInit } from 'graphql-request/dist/types.dom';
 import { useMutation, useQuery, UseMutationOptions, UseQueryOptions } from '@tanstack/react-query';
+import { RequestInit } from 'next/dist/server/web/spec-extension/request';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -205,6 +205,7 @@ export type RootQueryType = {
   getAccounts?: Maybe<Array<Maybe<Account>>>;
   getMessagesByRoomId?: Maybe<MessageConnection>;
   getRooms?: Maybe<Array<Maybe<Room>>>;
+  getUserAvatar?: Maybe<Avatar>;
   /** Health check */
   healthCheck?: Maybe<Scalars['Boolean']['output']>;
   me?: Maybe<Account>;
@@ -309,6 +310,11 @@ export type GetAccountsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetAccountsQuery = { __typename?: 'RootQueryType', getAccounts?: Array<{ __typename?: 'Account', username?: string | null, status?: AccountStatus | null, id: string } | null> | null };
+
+export type GetUserAvatarQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetUserAvatarQuery = { __typename?: 'RootQueryType', getUserAvatar?: { __typename?: 'Avatar', fileName?: string | null, filePath?: string | null } | null };
 
 
 export const CreateAccountDocument = `
@@ -536,5 +542,27 @@ export const useGetAccountsQuery = <
     useQuery<GetAccountsQuery, TError, TData>(
       variables === undefined ? ['getAccounts'] : ['getAccounts', variables],
       fetcher<GetAccountsQuery, GetAccountsQueryVariables>(client, GetAccountsDocument, variables, headers),
+      options
+    );
+export const GetUserAvatarDocument = `
+    query getUserAvatar {
+  getUserAvatar {
+    fileName
+    filePath
+  }
+}
+    `;
+export const useGetUserAvatarQuery = <
+      TData = GetUserAvatarQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: GetUserAvatarQueryVariables,
+      options?: UseQueryOptions<GetUserAvatarQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetUserAvatarQuery, TError, TData>(
+      variables === undefined ? ['getUserAvatar'] : ['getUserAvatar', variables],
+      fetcher<GetUserAvatarQuery, GetUserAvatarQueryVariables>(client, GetUserAvatarDocument, variables, headers),
       options
     );
