@@ -24,6 +24,7 @@ query getRooms {
   getRooms {
     id
     name
+    isPasswordProtected
   }
 }
 
@@ -42,8 +43,8 @@ query getUserAvatar {
   }
 }
 
-query getUserAvatarId($userId: ID!){
-  getUserAvatarId(userId: $userId){
+query getUserAvatarId($userId: ID!) {
+  getUserAvatarId(userId: $userId) {
     fileName
     filePath
   }

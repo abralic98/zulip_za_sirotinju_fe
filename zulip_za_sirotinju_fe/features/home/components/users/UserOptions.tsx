@@ -20,7 +20,7 @@ interface Props {
 }
 export const UserOptions: FC<Props> = ({ setOptions }) => {
   const [editProfile, setEditProfile] = useState(false);
-  const { isFetchingAvatar, getUserAvatar } = useProfile();
+  const { isFetchingAvatar, getUserAvatar } = useProfile({});
   const updateAccountStatusMutation =
     useUpdateAccountStatusMutation(graphqlClient);
 

@@ -5,11 +5,24 @@ ARG next_public_graphql
 ARG nextauth_secret
 ARG ws_link
 ARG nextauth_url
+ARG next_public_firebase_api_key
+ARG next_public_firebase_auth_domain
+ARG next_public_firebase_project_id
+ARG next_public_firebase_storage_bucket
+ARG next_public_firebase_messaging_sender_id
+ARG next_public_firebase_app_id
+
 
 ENV NEXT_PUBLIC_GRAPHQL=$next_public_graphql
 ENV NEXTAUTH_SECRET=$nextauth_secret
 ENV WS_LINK=$ws_link
 ENV NEXTAUTH_URL=$nextauth_url
+ENV NEXT_PUBLIC_FIREBASE_API_KEY=$next_public_firebase_api_key
+ENV NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=$next_public_firebase_auth_domain
+ENV NEXT_PUBLIC_FIREBASE_PROJECT_ID=$next_public_firebase_project_id
+ENV NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=$next_public_firebase_storage_bucket
+ENV NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=$next_public_firebase_messaging_sender_id
+ENV NEXT_PUBLIC_FIREBASE_APP_ID=$next_public_firebase_app_id
 
 FROM base AS deps
 RUN apk add --no-cache libc6-compat

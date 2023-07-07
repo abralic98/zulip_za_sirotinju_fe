@@ -20,7 +20,7 @@ export const UploadAvatar = () => {
   const [hover, setHover] = useState(false);
   const [files, setFiles] = useState<FileList | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { getUserAvatar } = useProfile();
+  const { getUserAvatar } = useProfile({});
   const [progresspercent, setProgresspercent] = useState(0);
   const updateAvatar = useUploadAvatarMutation(graphqlClient);
 
@@ -137,7 +137,7 @@ export const UploadAvatar = () => {
           </Box>
         )}
       </Box>
-      <Button onClick={handleSubmit}>Submit</Button>
+      <Button disabled={Boolean(!files)} onClick={handleSubmit}>Submit</Button>
     </Stack>
   );
 };

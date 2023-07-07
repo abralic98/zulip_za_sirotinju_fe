@@ -24,7 +24,7 @@ export const useProfile = (props: Props) => {
     {
       select: (u) => u.me,
       onSuccess: (d) => {
-        props.form?.reset({
+        props?.form?.reset({
           username: d?.username,
           firstName: d?.firstName,
           lastName: d?.lastName,

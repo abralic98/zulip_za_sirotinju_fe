@@ -4,21 +4,25 @@ mutation createMessage($input: CreateMessageInput) {
   }
 }
 
-mutation createRoom($input: CreateRoomInput){
-  createRoom(input: $input){
+mutation createRoom($input: CreateRoomInput) {
+  createRoom(input: $input) {
     id
   }
-} 
+}
 
 mutation uploadAvatar($avatar: CreateFileInput!) {
-  uploadAvatar(avatar: $avatar){
+  uploadAvatar(avatar: $avatar) {
     filePath
     fileName
   }
 }
 
-mutation updateProfile($input: UpdateProfileInput){
-  updateProfile(input: $input){
+mutation updateProfile($input: UpdateProfileInput) {
+  updateProfile(input: $input) {
     id
   }
+}
+
+mutation accessProtectedRoom($password: String!, $roomId: ID!) {
+  accessProtectedRoom(password: $password, roomId: $roomId)
 }

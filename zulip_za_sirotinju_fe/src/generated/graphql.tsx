@@ -129,12 +129,13 @@ export type PageInfo = {
 export type Room = {
   __typename?: 'Room';
   id?: Maybe<Scalars['ID']['output']>;
+  isPasswordProtected?: Maybe<Scalars['Boolean']['output']>;
   name?: Maybe<Scalars['String']['output']>;
-  password?: Maybe<Scalars['String']['output']>;
 };
 
 export type RootMutationType = {
   __typename?: 'RootMutationType';
+  accessProtectedRoom?: Maybe<Scalars['Boolean']['output']>;
   createAccount?: Maybe<Account>;
   /** Create Message */
   createMessage?: Maybe<Message>;
@@ -147,6 +148,12 @@ export type RootMutationType = {
   updateProfile?: Maybe<Account>;
   updateRoom?: Maybe<Room>;
   uploadAvatar?: Maybe<Avatar>;
+};
+
+
+export type RootMutationTypeAccessProtectedRoomArgs = {
+  password: Scalars['String']['input'];
+  roomId: Scalars['ID']['input'];
 };
 
 
@@ -318,6 +325,14 @@ export type UpdateProfileMutationVariables = Exact<{
 
 export type UpdateProfileMutation = { __typename?: 'RootMutationType', updateProfile?: { __typename?: 'Account', id: string } | null };
 
+export type AccessProtectedRoomMutationVariables = Exact<{
+  password: Scalars['String']['input'];
+  roomId: Scalars['ID']['input'];
+}>;
+
+
+export type AccessProtectedRoomMutation = { __typename?: 'RootMutationType', accessProtectedRoom?: boolean | null };
+
 export type GetMessagesByRoomIdQueryVariables = Exact<{
   roomId?: InputMaybe<Scalars['ID']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
@@ -330,7 +345,7 @@ export type GetMessagesByRoomIdQuery = { __typename?: 'RootQueryType', getMessag
 export type GetRoomsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetRoomsQuery = { __typename?: 'RootQueryType', getRooms?: Array<{ __typename?: 'Room', id?: string | null, name?: string | null } | null> | null };
+export type GetRoomsQuery = { __typename?: 'RootQueryType', getRooms?: Array<{ __typename?: 'Room', id?: string | null, name?: string | null, isPasswordProtected?: boolean | null } | null> | null };
 
 export type GetAccountsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -517,6 +532,24 @@ export const useUpdateProfileMutation = <
       (variables?: UpdateProfileMutationVariables) => fetcher<UpdateProfileMutation, UpdateProfileMutationVariables>(client, UpdateProfileDocument, variables, headers)(),
       options
     );
+export const AccessProtectedRoomDocument = `
+    mutation accessProtectedRoom($password: String!, $roomId: ID!) {
+  accessProtectedRoom(password: $password, roomId: $roomId)
+}
+    `;
+export const useAccessProtectedRoomMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<AccessProtectedRoomMutation, TError, AccessProtectedRoomMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<AccessProtectedRoomMutation, TError, AccessProtectedRoomMutationVariables, TContext>(
+      ['accessProtectedRoom'],
+      (variables?: AccessProtectedRoomMutationVariables) => fetcher<AccessProtectedRoomMutation, AccessProtectedRoomMutationVariables>(client, AccessProtectedRoomDocument, variables, headers)(),
+      options
+    );
 export const GetMessagesByRoomIdDocument = `
     query getMessagesByRoomId($roomId: ID, $first: Int, $after: String) {
   getMessagesByRoomId(roomId: $roomId, first: $first, after: $after) {
@@ -559,6 +592,7 @@ export const GetRoomsDocument = `
   getRooms {
     id
     name
+    isPasswordProtected
   }
 }
     `;

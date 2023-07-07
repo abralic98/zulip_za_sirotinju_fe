@@ -43,6 +43,7 @@ export const RoomList = () => {
     getRoomsSubscription{
       name
       id
+      isPasswordProtected
     }
   }
 `;
