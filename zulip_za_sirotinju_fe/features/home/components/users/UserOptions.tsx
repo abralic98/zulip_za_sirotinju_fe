@@ -10,6 +10,7 @@ import {
   AccountStatus,
   useUpdateAccountStatusMutation,
 } from "@/src/generated/graphql";
+import { UserIcon } from "lucide-react";
 import React, { Dispatch, FC, SetStateAction, useState } from "react";
 import { EditProfile } from "./edit-profile/EditProfile";
 import { useProfile } from "./edit-profile/hooks";
@@ -33,6 +34,16 @@ export const UserOptions: FC<Props> = ({ setOptions }) => {
     setOptions(false);
   };
 
+  const getAvatar = getUserAvatar?.filePath ? (
+    <Box onClick={() => setEditProfile(true)}>
+      <ImageBox width={300} height={300} src={getUserAvatar?.filePath || ""} />
+    </Box>
+  ) : (
+    <Box onClick={() => setEditProfile(true)}>
+      <UserIcon width={"120px"} height="120px" />
+    </Box>
+  );
+
   return (
     <Box
       background={"white"}
@@ -41,17 +52,7 @@ export const UserOptions: FC<Props> = ({ setOptions }) => {
     >
       <Stack background={"gray-700"}>
         <Stack gap={"md"}>
-          {isFetchingAvatar ? (
-            <LoaderDots />
-          ) : (
-            <Box onClick={() => setEditProfile(true)}>
-              <ImageBox
-                width={300}
-                height={300}
-                src={getUserAvatar?.filePath || ""}
-              />
-            </Box>
-          )}
+          {isFetchingAvatar ? <LoaderDots /> : getAvatar}
           <Button onClick={() => setEditProfile(true)} color="white">
             Edit Profile
           </Button>

@@ -58,7 +58,7 @@ export const UploadAvatar = () => {
             {
               avatar: {
                 filePath: downloadURL,
-                fileName: fileName,
+                fileName: session?.user.id + fileName,
               },
             },
             {
@@ -106,7 +106,6 @@ export const UploadAvatar = () => {
               height: "200px",
               position: "absolute",
               opacity: 0.8,
-              borderRadius: "15px",
               cursor: "pointer",
               display: "flex",
               justifyContent: "center",
@@ -131,7 +130,7 @@ export const UploadAvatar = () => {
               }}
               onChange={(e) => {
                 console.log(e.target.files);
-                setFiles(e.target.files)
+                setFiles(e.target.files);
               }}
               type={"file"}
             />

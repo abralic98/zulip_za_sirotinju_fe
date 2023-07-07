@@ -41,3 +41,10 @@ query getUserAvatar {
     filePath
   }
 }
+
+query getUserAvatarId($userId: ID!){
+  getUserAvatarId(userId: $userId){
+    fileName
+    filePath
+  }
+}

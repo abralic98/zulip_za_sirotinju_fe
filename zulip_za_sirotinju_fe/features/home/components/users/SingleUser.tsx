@@ -7,6 +7,7 @@ import { Account } from "@/src/generated/graphql";
 import { MoreVertical } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { FC, useState } from "react";
+import { OtherUserOptions } from "./OtherUserOptions";
 import { UserOptions } from "./UserOptions";
 
 interface Props {
@@ -16,15 +17,17 @@ export const SingleUser: FC<Props> = ({ account }) => {
   const { data: session } = useSession();
   const [dots, setDots] = useState(false);
   const [options, setOptions] = useState(false);
+
   if (!account) return null;
+
   const color = getStatusColor(account.status);
   const currentAccount = session?.user.id === account.id;
 
   return (
     <Cluster
       style={{ position: "relative" }}
-      onMouseEnter={() => currentAccount && setDots(true)}
-      onMouseLeave={() => currentAccount && setDots(false)}
+      onMouseEnter={() => setDots(true)}
+      onMouseLeave={() => setDots(false)}
       gap={"xs"}
       alignItems={"center"}
     >
@@ -41,7 +44,7 @@ export const SingleUser: FC<Props> = ({ account }) => {
         style={{ borderRadius: "50%" }}
         background={color}
       />
-      {currentAccount && dots && (
+      {dots && (
         <Box
           onClick={() => setOptions(!options)}
           style={{ cursor: "pointer", right: "5px", position: "absolute" }}
@@ -49,11 +52,15 @@ export const SingleUser: FC<Props> = ({ account }) => {
           <MoreVertical width={"18px"} />
         </Box>
       )}
-      {currentAccount && (
-        <Options open={options} setOpen={setOptions}>
-          <UserOptions setOptions={setOptions} />
-        </Options>
-      )}
+      <Options open={options} setOpen={setOptions}>
+        <Box style={{ position: "absolute", top: "22px", left: "15px" }}>
+          <Heading type="h3" color="white" fontWeight="bold">
+            {account.username || ""}
+          </Heading>
+        </Box>
+        {currentAccount && <UserOptions setOptions={setOptions} />}
+        {!currentAccount && <OtherUserOptions userId={account.id} />}
+      </Options>
     </Cluster>
   );
 };

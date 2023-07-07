@@ -206,6 +206,7 @@ export type RootQueryType = {
   getMessagesByRoomId?: Maybe<MessageConnection>;
   getRooms?: Maybe<Array<Maybe<Room>>>;
   getUserAvatar?: Maybe<Avatar>;
+  getUserAvatarId?: Maybe<Avatar>;
   /** Health check */
   healthCheck?: Maybe<Scalars['Boolean']['output']>;
   me?: Maybe<Account>;
@@ -219,6 +220,11 @@ export type RootQueryTypeGetMessagesByRoomIdArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   roomId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type RootQueryTypeGetUserAvatarIdArgs = {
+  userId: Scalars['ID']['input'];
 };
 
 
@@ -315,6 +321,13 @@ export type GetUserAvatarQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetUserAvatarQuery = { __typename?: 'RootQueryType', getUserAvatar?: { __typename?: 'Avatar', fileName?: string | null, filePath?: string | null } | null };
+
+export type GetUserAvatarIdQueryVariables = Exact<{
+  userId: Scalars['ID']['input'];
+}>;
+
+
+export type GetUserAvatarIdQuery = { __typename?: 'RootQueryType', getUserAvatarId?: { __typename?: 'Avatar', fileName?: string | null, filePath?: string | null } | null };
 
 
 export const CreateAccountDocument = `
@@ -564,5 +577,27 @@ export const useGetUserAvatarQuery = <
     useQuery<GetUserAvatarQuery, TError, TData>(
       variables === undefined ? ['getUserAvatar'] : ['getUserAvatar', variables],
       fetcher<GetUserAvatarQuery, GetUserAvatarQueryVariables>(client, GetUserAvatarDocument, variables, headers),
+      options
+    );
+export const GetUserAvatarIdDocument = `
+    query getUserAvatarId($userId: ID!) {
+  getUserAvatarId(userId: $userId) {
+    fileName
+    filePath
+  }
+}
+    `;
+export const useGetUserAvatarIdQuery = <
+      TData = GetUserAvatarIdQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: GetUserAvatarIdQueryVariables,
+      options?: UseQueryOptions<GetUserAvatarIdQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetUserAvatarIdQuery, TError, TData>(
+      ['getUserAvatarId', variables],
+      fetcher<GetUserAvatarIdQuery, GetUserAvatarIdQueryVariables>(client, GetUserAvatarIdDocument, variables, headers),
       options
     );
