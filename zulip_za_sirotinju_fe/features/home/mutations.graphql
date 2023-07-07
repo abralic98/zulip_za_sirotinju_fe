@@ -9,3 +9,16 @@ mutation createRoom($input: CreateRoomInput){
     id
   }
 } 
+
+mutation uploadAvatar($avatar: CreateFileInput!) {
+  uploadAvatar(avatar: $avatar){
+    filePath
+    fileName
+  }
+}
+
+mutation updateProfile($input: UpdateProfileInput){
+  updateProfile(input: $input){
+    id
+  }
+}

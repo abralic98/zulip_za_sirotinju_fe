@@ -16,9 +16,3 @@ mutation updateAccountStatus($status: AccountStatus) {
   }
 }
 
-mutation uploadAvatar($avatar: CreateFileInput!) {
-  uploadAvatar(avatar: $avatar){
-    filePath
-    fileName
-  }
-}

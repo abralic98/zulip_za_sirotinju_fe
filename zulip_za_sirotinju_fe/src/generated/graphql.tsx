@@ -144,6 +144,7 @@ export type RootMutationType = {
   deleteRoom?: Maybe<Room>;
   updateAccountStatus?: Maybe<Account>;
   updateMessage?: Maybe<Message>;
+  updateProfile?: Maybe<Account>;
   updateRoom?: Maybe<Room>;
   uploadAvatar?: Maybe<Avatar>;
 };
@@ -187,6 +188,11 @@ export type RootMutationTypeUpdateAccountStatusArgs = {
 export type RootMutationTypeUpdateMessageArgs = {
   id?: InputMaybe<Scalars['ID']['input']>;
   input?: InputMaybe<CreateMessageInput>;
+};
+
+
+export type RootMutationTypeUpdateProfileArgs = {
+  input?: InputMaybe<UpdateProfileInput>;
 };
 
 
@@ -251,6 +257,13 @@ export type Session = {
   token?: Maybe<Scalars['String']['output']>;
 };
 
+export type UpdateProfileInput = {
+  email?: InputMaybe<Scalars['String']['input']>;
+  firstName?: InputMaybe<Scalars['String']['input']>;
+  lastName?: InputMaybe<Scalars['String']['input']>;
+  username?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type CreateAccountMutationVariables = Exact<{
   input: CreateAccountInput;
 }>;
@@ -272,17 +285,10 @@ export type UpdateAccountStatusMutationVariables = Exact<{
 
 export type UpdateAccountStatusMutation = { __typename?: 'RootMutationType', updateAccountStatus?: { __typename?: 'Account', status?: AccountStatus | null } | null };
 
-export type UploadAvatarMutationVariables = Exact<{
-  avatar: CreateFileInput;
-}>;
-
-
-export type UploadAvatarMutation = { __typename?: 'RootMutationType', uploadAvatar?: { __typename?: 'Avatar', filePath?: string | null, fileName?: string | null } | null };
-
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MeQuery = { __typename?: 'RootQueryType', me?: { __typename?: 'Account', id: string, username?: string | null, email?: string | null, status?: AccountStatus | null } | null };
+export type MeQuery = { __typename?: 'RootQueryType', me?: { __typename?: 'Account', id: string, username?: string | null, firstName?: string | null, lastName?: string | null, email?: string | null, status?: AccountStatus | null } | null };
 
 export type CreateMessageMutationVariables = Exact<{
   input?: InputMaybe<CreateMessageInput>;
@@ -297,6 +303,20 @@ export type CreateRoomMutationVariables = Exact<{
 
 
 export type CreateRoomMutation = { __typename?: 'RootMutationType', createRoom?: { __typename?: 'Room', id?: string | null } | null };
+
+export type UploadAvatarMutationVariables = Exact<{
+  avatar: CreateFileInput;
+}>;
+
+
+export type UploadAvatarMutation = { __typename?: 'RootMutationType', uploadAvatar?: { __typename?: 'Avatar', filePath?: string | null, fileName?: string | null } | null };
+
+export type UpdateProfileMutationVariables = Exact<{
+  input?: InputMaybe<UpdateProfileInput>;
+}>;
+
+
+export type UpdateProfileMutation = { __typename?: 'RootMutationType', updateProfile?: { __typename?: 'Account', id: string } | null };
 
 export type GetMessagesByRoomIdQueryVariables = Exact<{
   roomId?: InputMaybe<Scalars['ID']['input']>;
@@ -390,32 +410,13 @@ export const useUpdateAccountStatusMutation = <
       (variables?: UpdateAccountStatusMutationVariables) => fetcher<UpdateAccountStatusMutation, UpdateAccountStatusMutationVariables>(client, UpdateAccountStatusDocument, variables, headers)(),
       options
     );
-export const UploadAvatarDocument = `
-    mutation uploadAvatar($avatar: CreateFileInput!) {
-  uploadAvatar(avatar: $avatar) {
-    filePath
-    fileName
-  }
-}
-    `;
-export const useUploadAvatarMutation = <
-      TError = unknown,
-      TContext = unknown
-    >(
-      client: GraphQLClient,
-      options?: UseMutationOptions<UploadAvatarMutation, TError, UploadAvatarMutationVariables, TContext>,
-      headers?: RequestInit['headers']
-    ) =>
-    useMutation<UploadAvatarMutation, TError, UploadAvatarMutationVariables, TContext>(
-      ['uploadAvatar'],
-      (variables?: UploadAvatarMutationVariables) => fetcher<UploadAvatarMutation, UploadAvatarMutationVariables>(client, UploadAvatarDocument, variables, headers)(),
-      options
-    );
 export const MeDocument = `
     query me {
   me {
     id
     username
+    firstName
+    lastName
     email
     status
   }
@@ -473,6 +474,47 @@ export const useCreateRoomMutation = <
     useMutation<CreateRoomMutation, TError, CreateRoomMutationVariables, TContext>(
       ['createRoom'],
       (variables?: CreateRoomMutationVariables) => fetcher<CreateRoomMutation, CreateRoomMutationVariables>(client, CreateRoomDocument, variables, headers)(),
+      options
+    );
+export const UploadAvatarDocument = `
+    mutation uploadAvatar($avatar: CreateFileInput!) {
+  uploadAvatar(avatar: $avatar) {
+    filePath
+    fileName
+  }
+}
+    `;
+export const useUploadAvatarMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<UploadAvatarMutation, TError, UploadAvatarMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<UploadAvatarMutation, TError, UploadAvatarMutationVariables, TContext>(
+      ['uploadAvatar'],
+      (variables?: UploadAvatarMutationVariables) => fetcher<UploadAvatarMutation, UploadAvatarMutationVariables>(client, UploadAvatarDocument, variables, headers)(),
+      options
+    );
+export const UpdateProfileDocument = `
+    mutation updateProfile($input: UpdateProfileInput) {
+  updateProfile(input: $input) {
+    id
+  }
+}
+    `;
+export const useUpdateProfileMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<UpdateProfileMutation, TError, UpdateProfileMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<UpdateProfileMutation, TError, UpdateProfileMutationVariables, TContext>(
+      ['updateProfile'],
+      (variables?: UpdateProfileMutationVariables) => fetcher<UpdateProfileMutation, UpdateProfileMutationVariables>(client, UpdateProfileDocument, variables, headers)(),
       options
     );
 export const GetMessagesByRoomIdDocument = `

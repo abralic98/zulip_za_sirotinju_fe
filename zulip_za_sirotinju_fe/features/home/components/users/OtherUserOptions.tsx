@@ -11,11 +11,7 @@ interface Props {
   userId: string;
 }
 export const OtherUserOptions: FC<Props> = ({ userId }) => {
-  const { isFetchingOtherAvatar, getOtherUserAvatar } = useProfile(userId);
-
-  console.log('is other');
-  
-
+  const { isFetchingOtherAvatar, getOtherUserAvatar } = useProfile({userId:userId});
   const getAvatar = getOtherUserAvatar?.filePath ? (
       <ImageBox width={300} height={300} src={getOtherUserAvatar?.filePath || ""} />
   ) : (
