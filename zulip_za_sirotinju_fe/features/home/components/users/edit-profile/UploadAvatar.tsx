@@ -29,7 +29,6 @@ export const UploadAvatar = () => {
   };
 
   const handleSubmit = () => {
-    console.log("kita", files);
 
     if (!files) return;
     const file = files[0];
