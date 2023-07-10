@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { useRoomsStore, useRoomStore } from "../../store/store";
 import * as withAbsintheSocket from "@absinthe/socket";
 import { useSession } from "next-auth/react";
-import toast from "react-hot-toast";
 import { useSocket } from "@/hooks/useSocket";
 import { useToast } from "@/hooks/useToast";
 import { Notification } from "@/src/generated/graphql";
@@ -67,8 +66,8 @@ export const Notifications = () => {
   }, [session?.user.token, socket]);
 
   useEffect(() => {
-    if(room.activeRoom===message?.room?.id){
-     return 
+    if (room.activeRoom === message?.room?.id) {
+      return;
     }
     const updated = rooms.rooms.map((r) => {
       if (r.id === message?.room?.id) {
