@@ -1,19 +1,22 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRoomStore } from "../../store/store";
+import { useRoomsStore, useRoomStore } from "../../store/store";
 import * as withAbsintheSocket from "@absinthe/socket";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 import { useSocket } from "@/hooks/useSocket";
 import { useToast } from "@/hooks/useToast";
+import { Notification } from "@/src/generated/graphql";
 
 export const Notifications = () => {
   const room = useRoomStore();
+  const rooms = useRoomsStore();
 
   const { data: session } = useSession();
   const [sound, setSound] = useState<HTMLAudioElement | null>(null);
   const { socket } = useSocket();
   const { toastSuccess } = useToast();
+  const [message, setMessage] = useState<Notification>();
 
   useEffect(() => {
     // setSound(new Audio('sounds/coin-drop.mp3'))
@@ -32,6 +35,7 @@ export const Notifications = () => {
       }
       room{
         name
+        id
       }
     }
   }
@@ -40,6 +44,7 @@ export const Notifications = () => {
   useEffect(() => {
     if (!session?.user.token) return;
     if (!socket) return;
+    if (!Boolean(rooms.rooms.length === 0)) return;
 
     const notifier = withAbsintheSocket.send(socket, {
       operation,
@@ -51,6 +56,7 @@ export const Notifications = () => {
         const kita = data.data.notifications;
         if (kita?.account.id == session.user.id) return;
         if (kita) {
+          setMessage(kita);
           toastSuccess(
             `${kita.account.username} sent ${kita.message.text} in ${kita.room.name}`
           );
@@ -60,5 +66,22 @@ export const Notifications = () => {
     });
   }, [session?.user.token, socket]);
 
+  useEffect(() => {
+    if(room.activeRoom===message?.room?.id){
+     return 
+    }
+    const updated = rooms.rooms.map((r) => {
+      if (r.id === message?.room?.id) {
+        return {
+          ...r,
+          unreadMessages: r.unreadMessages + 1,
+        };
+      } else {
+        return r;
+      }
+    });
+
+    rooms.setRooms(updated);
+  }, [message]);
   return null;
 };

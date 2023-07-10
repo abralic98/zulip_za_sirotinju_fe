@@ -12,7 +12,7 @@ import {
 import React, { Dispatch, FC, SetStateAction } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { useRoomStore } from "../../store/store";
+import { useRoomsStore, useRoomStore } from "../../store/store";
 
 interface Props {
   setOpen: Dispatch<SetStateAction<boolean>>;
@@ -22,6 +22,7 @@ interface Props {
 export const VerifyRoomAccess: FC<Props> = ({ setOpen, open, roomId }) => {
   const form = useForm<Omit<AccessProtectedRoomMutationVariables, "roomId">>();
   const roomstore = useRoomStore();
+  const roomsstore = useRoomsStore()
   const accessRoom = useAccessProtectedRoomMutation(graphqlClient);
 
   const submit = async (
@@ -31,6 +32,19 @@ export const VerifyRoomAccess: FC<Props> = ({ setOpen, open, roomId }) => {
     try {
       if (res.accessProtectedRoom) {
         roomstore.setActiveRoom(roomId);
+
+        const updated = roomsstore.rooms.map((r) => {
+          if (r.id === roomId) {
+            return {
+              ...r,
+              unreadMessages: 0,
+            };
+          } else {
+            return r;
+          }
+        });
+
+        roomsstore.setRooms(updated);
         setOpen(false);
       } else {
         toast.error("Wrong password");

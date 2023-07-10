@@ -129,7 +129,6 @@ export const UploadAvatar = () => {
                 cursor: "pointer",
               }}
               onChange={(e) => {
-                console.log(e.target.files);
                 setFiles(e.target.files);
               }}
               type={"file"}

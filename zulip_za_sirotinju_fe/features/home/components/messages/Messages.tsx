@@ -3,7 +3,7 @@ import { Box } from "@/components/primitives/box/box";
 import { Stack } from "@/components/primitives/stack";
 import { GetMessagesByRoomIdQuery, Message } from "@/src/generated/graphql";
 import React, { useEffect, useRef, useState } from "react";
-import { useRoomStore } from "../../store/store";
+import {  useRoomStore } from "../../store/store";
 import { SendMessage } from "./SendMessage";
 import { SingleMessage } from "./SingleMessage";
 import * as withAbsintheSocket from "@absinthe/socket";
@@ -55,8 +55,10 @@ export const Messages = () => {
       onResult: (data) => {
         //@ts-ignore
         const kita = data.data.getMessagesByRoomIdSocket as Message;
+
         if (kita && String(room.activeRoom) === String(kita.room?.id)) {
           setData((prev: any) => [...prev, kita]);
+
           if (messageContainerRef.current) {
             const height = messageContainerRef.current.offsetHeight;
             messageContainerRef.current.scroll({ top: height });

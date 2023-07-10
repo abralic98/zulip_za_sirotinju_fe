@@ -1,5 +1,7 @@
 "use client";
 import { Box } from "@/components/primitives/box/box";
+import { Cluster } from "@/components/primitives/cluster";
+import { TextBox } from "@/components/ui/TextBox";
 import { Room } from "@/src/generated/graphql";
 import { Color } from "@/styles/vars/colors";
 import React, { FC, useState } from "react";
@@ -17,6 +19,7 @@ export const SingleRoom: FC<Props> = ({ room }) => {
 
   if (!room) return null;
   const current = roomsstore.rooms.find((r) => r.id === room.id);
+
   const hasMessages =
     current?.unreadMessages && current?.unreadMessages > 0
       ? current.unreadMessages
@@ -31,6 +34,18 @@ export const SingleRoom: FC<Props> = ({ room }) => {
           }
           if (!room.isPasswordProtected) {
             roomstore.setActiveRoom(room.id || undefined);
+            const updated = roomsstore.rooms.map((r) => {
+              if (r.id === room.id) {
+                return {
+                  ...r,
+                  unreadMessages: 0,
+                };
+              } else {
+                return r;
+              }
+            });
+
+            roomsstore.setRooms(updated);
           }
         }}
         style={{ cursor: "pointer" }}
@@ -42,9 +57,20 @@ export const SingleRoom: FC<Props> = ({ room }) => {
         alignItems="center"
         p={"xl"}
       >
-        {`${room.name} ${hasMessages} `}
+        <Cluster>
+          {`${room.name}`}
+          {hasMessages && (
+            <TextBox
+              borderRadius="7px"
+              width="26px"
+              height="26px"
+              background="green-400"
+              text={String(hasMessages)}
+            />
+          )}
+        </Cluster>
       </Box>
-      <VerifyRoomAccess roomId={room.id || ''} open={open} setOpen={setOpen} />
+      <VerifyRoomAccess roomId={room.id || ""} open={open} setOpen={setOpen} />
     </Box>
   );
 };

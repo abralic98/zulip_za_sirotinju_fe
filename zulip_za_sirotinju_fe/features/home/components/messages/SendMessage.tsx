@@ -18,7 +18,6 @@ export const SendMessage = () => {
 
   const sendMessageMutation = useCreateMessageMutation(graphqlClient);
   const room = useRoomStore();
-  const rooms = useRoomsStore();
 
   const submit = async (input: CreateMessageInput) => {
     if (!room.activeRoom) return;
@@ -28,17 +27,6 @@ export const SendMessage = () => {
 
     try {
       if (res.createMessage) {
-        const currentRoom = rooms.rooms.find((r) => r.id === room.activeRoom);
-        const updateRoom = rooms.rooms.filter((r) => r.id !== room.activeRoom);
-
-        rooms.setRooms([
-          ...updateRoom,
-          {
-            name: room.activeRoom,
-            id: room.activeRoom,
-            unreadMessages: currentRoom?.unreadMessages || 0 + 1,
-          },
-        ]);
         form.resetField('text');
       }
     } catch {
