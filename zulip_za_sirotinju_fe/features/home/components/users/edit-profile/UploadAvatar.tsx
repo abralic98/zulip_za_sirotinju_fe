@@ -14,6 +14,7 @@ import toast from "react-hot-toast";
 import { queryClient } from "@/lib/queryClientProvider";
 import { useProfile } from "./hooks";
 import { ImageBox } from "@/components/ui/ImageBox";
+import { LoaderDots } from "@/components/ui/LoaderDots";
 
 export const UploadAvatar = () => {
   const { data: session, status } = useSession();
@@ -97,12 +98,12 @@ export const UploadAvatar = () => {
         ) : (
           <UserIcon width={"150px"} height="150px" color="white" />
         )}
-        {hover && (
+        {hover && progresspercent===0 && (
           <Box
             onClick={handleClick}
             style={{
               width: "200px",
-              height: "200px",
+              height: "210px",
               position: "absolute",
               opacity: 0.8,
               cursor: "pointer",
@@ -133,6 +134,24 @@ export const UploadAvatar = () => {
               }}
               type={"file"}
             />
+          </Box>
+        )}
+
+        {Boolean(progresspercent>0) && (
+          <Box
+            style={{
+              width: "200px",
+              height: "210px",
+              position: "absolute",
+              cursor: "pointer",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              background:'rgba(0,0,0,0.5)'
+            }}
+            // className="bg-gray-900"
+          >
+            <LoaderDots/>
           </Box>
         )}
       </Box>
