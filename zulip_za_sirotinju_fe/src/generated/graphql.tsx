@@ -462,6 +462,15 @@ export type GetUserConversationsQueryVariables = Exact<{ [key: string]: never; }
 
 export type GetUserConversationsQuery = { __typename?: 'RootQueryType', getUserConversations?: Array<{ __typename?: 'Conversation', id?: string | null, userOne?: { __typename?: 'Account', username?: string | null, status?: AccountStatus | null, id: string } | null, userTwo?: { __typename?: 'Account', username?: string | null, status?: AccountStatus | null, id: string } | null } | null> | null };
 
+export type GetConversationRepliesByConversationIdQueryVariables = Exact<{
+  conversationId?: InputMaybe<Scalars['ID']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type GetConversationRepliesByConversationIdQuery = { __typename?: 'RootQueryType', getConversationRepliesByConversationId?: { __typename?: 'ConversationReplyConnection', edges?: Array<{ __typename?: 'ConversationReplyEdge', node?: { __typename?: 'ConversationReply', text?: string | null, insertedAt?: any | null, id: string, account?: { __typename?: 'Account', username?: string | null, id: string } | null } | null } | null> | null, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, hasPreviousPage: boolean, endCursor?: string | null, startCursor?: string | null } } | null };
+
 
 export const CreateAccountDocument = `
     mutation createAccount($input: CreateAccountInput!) {
@@ -804,5 +813,46 @@ export const useGetUserConversationsQuery = <
     useQuery<GetUserConversationsQuery, TError, TData>(
       variables === undefined ? ['getUserConversations'] : ['getUserConversations', variables],
       fetcher<GetUserConversationsQuery, GetUserConversationsQueryVariables>(client, GetUserConversationsDocument, variables, headers),
+      options
+    );
+export const GetConversationRepliesByConversationIdDocument = `
+    query getConversationRepliesByConversationId($conversationId: ID, $first: Int, $after: String) {
+  getConversationRepliesByConversationId(
+    conversationId: $conversationId
+    first: $first
+    after: $after
+  ) {
+    edges {
+      node {
+        account {
+          username
+          id
+        }
+        text
+        insertedAt
+        id
+      }
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      endCursor
+      startCursor
+    }
+  }
+}
+    `;
+export const useGetConversationRepliesByConversationIdQuery = <
+      TData = GetConversationRepliesByConversationIdQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: GetConversationRepliesByConversationIdQueryVariables,
+      options?: UseQueryOptions<GetConversationRepliesByConversationIdQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetConversationRepliesByConversationIdQuery, TError, TData>(
+      variables === undefined ? ['getConversationRepliesByConversationId'] : ['getConversationRepliesByConversationId', variables],
+      fetcher<GetConversationRepliesByConversationIdQuery, GetConversationRepliesByConversationIdQueryVariables>(client, GetConversationRepliesByConversationIdDocument, variables, headers),
       options
     );

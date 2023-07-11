@@ -1,7 +1,8 @@
+
 "use client";
 import { Box } from "@/components/primitives/box/box";
 import { Stack } from "@/components/primitives/stack";
-import { GetMessagesByRoomIdQuery, Message } from "@/src/generated/graphql";
+import { ConversationReply, GetMessagesByRoomIdQuery, Message } from "@/src/generated/graphql";
 import React, { FC, useEffect, useRef, useState } from "react";
 import {  useRoomStore } from "../../store/store";
 import { SendMessage } from "./SendMessage";
@@ -10,53 +11,59 @@ import * as withAbsintheSocket from "@absinthe/socket";
 import { useSession } from "next-auth/react";
 import { ActiveSockets } from "@/types/socket";
 import { useSocket } from "@/hooks/useSocket";
-import { useMessages } from "./hooks";
+import { useMessages, usePrivateMessages } from "./hooks";
 import { usePagination } from "@/hooks/usePagination";
 import { ObservableElement } from "@/components/ObservableElement";
+import { usePrivateRoomStore } from "../../store/privateRoomStore";
 
-export const Messages = () => {
-  const room = useRoomStore();
+export const PrivateMessages= () => {
+  const conversation= usePrivateRoomStore();
 
   const messagesRef = useRef<HTMLDivElement | null>(null);
   const messageContainerRef = useRef<HTMLDivElement | null>(null);
   const { data: session, status } = useSession();
   const { socket } = useSocket();
-  const { generateRowData, query } = useMessages();
-  const [data, setData] = useState<Message[]>([]);
+  const { generateRowData, query } = usePrivateMessages();
+  const [data, setData] = useState<ConversationReply[]>([]);
   const nest = usePagination(query, messagesRef);
   const [activeSubscriptions, setActiveSubscriptions] = useState<
     ActiveSockets[]
   >([]);
 
   const operation = `
-  subscription getMessagesByRoomIdSocket($id: ID!) {
-    getMessagesByRoomIdSocket(id: $id) {
+  subscription getConversationRepliesByConversationId($id: ID!) {
+    getConversationRepliesByConversationId(id: $id) {
       text
       id
       account{
         username
       }
       insertedAt
-      room{
+      conversation{
         id
       }
     }
   }
 `;
 
+
+        console.log(conversation, "DATAAAAAAAA");
   useEffect(() => {
-    if (!session?.user.token || !room.activeRoom) return;
+    if (!session?.user.token || !conversation.activeConversation) return;
     if (!socket) return;
     const notifier = withAbsintheSocket.send(socket, {
       operation,
-      variables: { id: String(room.activeRoom) },
+      variables: { id: String(conversation.activeConversation) },
     });
     const absintheSocket = withAbsintheSocket.observe(socket, notifier, {
       onResult: (data) => {
         //@ts-ignore
-        const kita = data.data.getMessagesByRoomIdSocket as Message;
+        const kita = data.data.getConversationRepliesByConversationId as ConversationReply;
 
-        if (kita && String(room.activeRoom) === String(kita.room?.id)) {
+        console.log(kita);
+        
+        if (kita && String(conversation.activeConversation) === String(kita.conversation?.id)) {
+          
           setData((prev: any) => [...prev, kita]);
 
           if (messageContainerRef.current) {
@@ -77,7 +84,7 @@ export const Messages = () => {
     return () => {
       withAbsintheSocket.cancel(socket, notifier);
     };
-  }, [session?.user.token, room.activeRoom, socket]);
+  }, [session?.user.token, conversation.activeConversation, socket]);
 
   useEffect(() => {
     setData([]);
@@ -87,7 +94,8 @@ export const Messages = () => {
     messageContainerRef.current.scroll({ top: height });
   }, [messageContainerRef, query.isFetched]);
 
-  if (!room.activeRoom)
+
+  if (!conversation.activeConversation)
     return (
       <Box width={"1/3"} background="gray-700" color="white">
         Join Room

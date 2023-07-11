@@ -65,3 +65,25 @@ query getUserConversations {
     }
   }
 }
+
+query getConversationRepliesByConversationId($conversationId: ID, $first: Int, $after: String) {
+  getConversationRepliesByConversationId(conversationId: $conversationId, first: $first, after: $after) {
+    edges {
+      node {
+        account {
+          username
+          id
+        }
+        text
+        insertedAt
+        id
+      }
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      endCursor
+      startCursor
+    }
+  }
+}

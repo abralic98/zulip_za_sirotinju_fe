@@ -3,11 +3,11 @@ import { Cluster } from "@/components/primitives/cluster";
 import { Stack } from "@/components/primitives/stack";
 import { Heading } from "@/components/ui/Heading";
 import { displayDate } from "@/helpers/dateTimeConverter";
-import { Message } from "@/src/generated/graphql";
+import { ConversationReply, Message } from "@/src/generated/graphql";
 import React, { FC } from "react";
 
 interface Props {
-  message: Message | null;
+  message: Message | ConversationReply |  null;
 }
 export const SingleMessage: FC<Props> = ({ message }) => {
   if (!message) return null;
