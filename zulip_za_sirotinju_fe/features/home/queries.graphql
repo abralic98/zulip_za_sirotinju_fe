@@ -49,3 +49,19 @@ query getUserAvatarId($userId: ID!) {
     filePath
   }
 }
+
+query getUserConversations {
+  getUserConversations {
+    id
+    userOne {
+      username
+      status
+      id
+    }
+    userTwo {
+      username
+      status
+      id
+    }
+  }
+}

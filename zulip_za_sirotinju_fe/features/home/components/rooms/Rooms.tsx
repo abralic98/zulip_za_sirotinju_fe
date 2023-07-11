@@ -4,6 +4,7 @@ import { Stack } from "@/components/primitives/stack";
 import { Heading } from "@/components/ui/Heading";
 import React, { useState } from "react";
 import { CreateNewRoom } from "./CreateNewRoom";
+import { PrivateRoomList } from "./PrivateRoomList";
 import { RoomList } from "./RoomList";
 
 export const Rooms = () => {
@@ -24,6 +25,10 @@ export const Rooms = () => {
           Rooms
         </Heading>
         <RoomList />
+        <Heading type="h1" color="blue-400">
+          Private Messages
+        </Heading>
+        <PrivateRoomList/>
       </Stack>
       <CreateNewRoom />
     </Box>

@@ -1,6 +1,6 @@
 import { GraphQLClient } from 'graphql-request';
+import { RequestInit } from 'graphql-request/dist/types.dom';
 import { useMutation, useQuery, UseMutationOptions, UseQueryOptions } from '@tanstack/react-query';
-import { RequestInit } from 'next/dist/server/web/spec-extension/request';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -51,10 +51,44 @@ export type Avatar = {
   insertedAt?: Maybe<Scalars['Datetime']['output']>;
 };
 
+export type Conversation = {
+  __typename?: 'Conversation';
+  id?: Maybe<Scalars['ID']['output']>;
+  userOne?: Maybe<Account>;
+  userTwo?: Maybe<Account>;
+};
+
+export type ConversationReply = Node & {
+  __typename?: 'ConversationReply';
+  account?: Maybe<Account>;
+  conversation?: Maybe<Conversation>;
+  /** The ID of an object */
+  id: Scalars['ID']['output'];
+  insertedAt?: Maybe<Scalars['Datetime']['output']>;
+  text?: Maybe<Scalars['String']['output']>;
+};
+
+export type ConversationReplyConnection = {
+  __typename?: 'ConversationReplyConnection';
+  edges?: Maybe<Array<Maybe<ConversationReplyEdge>>>;
+  pageInfo: PageInfo;
+};
+
+export type ConversationReplyEdge = {
+  __typename?: 'ConversationReplyEdge';
+  cursor?: Maybe<Scalars['String']['output']>;
+  node?: Maybe<ConversationReply>;
+};
+
 export type CreateAccountInput = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
   username: Scalars['String']['input'];
+};
+
+export type CreateConversationReplyInput = {
+  conversationId?: InputMaybe<Scalars['String']['input']>;
+  text?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreateFileInput = {
@@ -135,18 +169,33 @@ export type Room = {
 
 export type RootMutationType = {
   __typename?: 'RootMutationType';
+  /** Enter Protected Room */
   accessProtectedRoom?: Maybe<Scalars['Boolean']['output']>;
+  /** Register */
   createAccount?: Maybe<Account>;
+  /** Create Private Conversation */
+  createConversation?: Maybe<Conversation>;
+  /** Send Private Message */
+  createConversationReply?: Maybe<ConversationReply>;
   /** Create Message */
   createMessage?: Maybe<Message>;
+  /** Create Room */
   createRoom?: Maybe<Room>;
+  /** Create Session */
   createSession?: Maybe<Session>;
+  /** Delete Message */
   deleteMessage?: Maybe<Message>;
+  /** Delete Room */
   deleteRoom?: Maybe<Room>;
+  /** Update Account Status */
   updateAccountStatus?: Maybe<Account>;
+  /** Update Message */
   updateMessage?: Maybe<Message>;
+  /** Update Profile Info */
   updateProfile?: Maybe<Account>;
+  /** Update Room */
   updateRoom?: Maybe<Room>;
+  /** Upload Image */
   uploadAvatar?: Maybe<Avatar>;
 };
 
@@ -159,6 +208,16 @@ export type RootMutationTypeAccessProtectedRoomArgs = {
 
 export type RootMutationTypeCreateAccountArgs = {
   input: CreateAccountInput;
+};
+
+
+export type RootMutationTypeCreateConversationArgs = {
+  userTwo: Scalars['ID']['input'];
+};
+
+
+export type RootMutationTypeCreateConversationReplyArgs = {
+  input?: InputMaybe<CreateConversationReplyInput>;
 };
 
 
@@ -215,15 +274,34 @@ export type RootMutationTypeUploadAvatarArgs = {
 
 export type RootQueryType = {
   __typename?: 'RootQueryType';
+  /** Get All Accounts */
   getAccounts?: Maybe<Array<Maybe<Account>>>;
+  /** Paginated Private Messages in Conversation */
+  getConversationRepliesByConversationId?: Maybe<ConversationReplyConnection>;
+  /** Paginated Messages in Room */
   getMessagesByRoomId?: Maybe<MessageConnection>;
+  /** Get All Rooms */
   getRooms?: Maybe<Array<Maybe<Room>>>;
+  /** Get User Avatar */
   getUserAvatar?: Maybe<Avatar>;
+  /** Get User Avatar Id */
   getUserAvatarId?: Maybe<Avatar>;
+  /** Get User Private Conversations */
+  getUserConversations?: Maybe<Array<Maybe<Conversation>>>;
   /** Health check */
   healthCheck?: Maybe<Scalars['Boolean']['output']>;
+  /** Get User */
   me?: Maybe<Account>;
   node?: Maybe<Node>;
+};
+
+
+export type RootQueryTypeGetConversationRepliesByConversationIdArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  conversationId?: InputMaybe<Scalars['ID']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -245,15 +323,30 @@ export type RootQueryTypeNodeArgs = {
   id: Scalars['ID']['input'];
 };
 
+/** Get Messages By Room Id Socket */
 export type RootSubscriptionType = {
   __typename?: 'RootSubscriptionType';
+  /** Get Accounts Socket */
   getAccounts?: Maybe<Array<Maybe<Account>>>;
+  /** Get Conversation Reply Socket */
+  getConversationRepliesByConversationId?: Maybe<ConversationReply>;
+  /** Get User Private Conversations Socket */
+  getConversationsSubscription?: Maybe<Array<Maybe<Conversation>>>;
   getMessagesByRoomIdSocket?: Maybe<Message>;
+  /** Get Rooms Socket */
   getRoomsSubscription?: Maybe<Array<Maybe<Room>>>;
+  /** Get Public Notifications */
   notifications?: Maybe<Notification>;
 };
 
 
+/** Get Messages By Room Id Socket */
+export type RootSubscriptionTypeGetConversationRepliesByConversationIdArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+/** Get Messages By Room Id Socket */
 export type RootSubscriptionTypeGetMessagesByRoomIdSocketArgs = {
   id: Scalars['ID']['input'];
 };
@@ -363,6 +456,11 @@ export type GetUserAvatarIdQueryVariables = Exact<{
 
 
 export type GetUserAvatarIdQuery = { __typename?: 'RootQueryType', getUserAvatarId?: { __typename?: 'Avatar', fileName?: string | null, filePath?: string | null } | null };
+
+export type GetUserConversationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetUserConversationsQuery = { __typename?: 'RootQueryType', getUserConversations?: Array<{ __typename?: 'Conversation', id?: string | null, userOne?: { __typename?: 'Account', username?: string | null, status?: AccountStatus | null, id: string } | null, userTwo?: { __typename?: 'Account', username?: string | null, status?: AccountStatus | null, id: string } | null } | null> | null };
 
 
 export const CreateAccountDocument = `
@@ -675,5 +773,36 @@ export const useGetUserAvatarIdQuery = <
     useQuery<GetUserAvatarIdQuery, TError, TData>(
       ['getUserAvatarId', variables],
       fetcher<GetUserAvatarIdQuery, GetUserAvatarIdQueryVariables>(client, GetUserAvatarIdDocument, variables, headers),
+      options
+    );
+export const GetUserConversationsDocument = `
+    query getUserConversations {
+  getUserConversations {
+    id
+    userOne {
+      username
+      status
+      id
+    }
+    userTwo {
+      username
+      status
+      id
+    }
+  }
+}
+    `;
+export const useGetUserConversationsQuery = <
+      TData = GetUserConversationsQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: GetUserConversationsQueryVariables,
+      options?: UseQueryOptions<GetUserConversationsQuery, TError, TData>,
+      headers?: RequestInit['headers']
+    ) =>
+    useQuery<GetUserConversationsQuery, TError, TData>(
+      variables === undefined ? ['getUserConversations'] : ['getUserConversations', variables],
+      fetcher<GetUserConversationsQuery, GetUserConversationsQueryVariables>(client, GetUserConversationsDocument, variables, headers),
       options
     );

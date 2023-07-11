@@ -8,7 +8,6 @@ import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import { SingleRoom } from "./SingleRoom";
 import * as withAbsintheSocket from "@absinthe/socket";
-import { Socket as PhoenixSocket } from "phoenix";
 import { useRoomsStore } from "../../store/store";
 import { useSocket } from "@/hooks/useSocket";
 
@@ -78,7 +77,7 @@ export const RoomList = () => {
 
   if (isFetching) return <LoaderDots />;
   return (
-    <Box>
+    <Box style={{height:'500px', overflow: 'auto'}}>
       <Stack gap={"xxs"}>
         {data?.map((r) => {
           return <SingleRoom key={r?.id} room={r} />;
