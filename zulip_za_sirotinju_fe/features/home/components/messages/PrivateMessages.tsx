@@ -31,8 +31,8 @@ export const PrivateMessages= () => {
   >([]);
 
   const operation = `
-  subscription getConversationRepliesByConversationId($id: ID!) {
-    getConversationRepliesByConversationId(id: $id) {
+  subscription getConversationRepliesByConversationIdSocket($id: ID!) {
+    getConversationRepliesByConversationIdSocket(id: $id) {
       text
       id
       account{
@@ -58,7 +58,7 @@ export const PrivateMessages= () => {
     const absintheSocket = withAbsintheSocket.observe(socket, notifier, {
       onResult: (data) => {
         //@ts-ignore
-        const kita = data.data.getConversationRepliesByConversationId as ConversationReply;
+        const kita = data.data.getConversationRepliesByConversationIdSocket as ConversationReply;
 
         console.log(kita);
         
@@ -94,13 +94,6 @@ export const PrivateMessages= () => {
     messageContainerRef.current.scroll({ top: height });
   }, [messageContainerRef, query.isFetched]);
 
-
-  if (!conversation.activeConversation)
-    return (
-      <Box width={"1/3"} background="gray-700" color="white">
-        Join Room
-      </Box>
-    );
   return (
     <Stack
       display={"flex"}
@@ -132,7 +125,7 @@ export const PrivateMessages= () => {
           <ObservableElement ref={messagesRef} />
         </Box>
       </Box>
-      <SendMessage />
+      <SendMessage type='Private' />
     </Stack>
   );
 };

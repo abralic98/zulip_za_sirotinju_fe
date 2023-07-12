@@ -160,6 +160,15 @@ export type PageInfo = {
   startCursor?: Maybe<Scalars['String']['output']>;
 };
 
+export type PrivateNotification = {
+  __typename?: 'PrivateNotification';
+  account?: Maybe<Account>;
+  conversation?: Maybe<Conversation>;
+  id?: Maybe<Scalars['ID']['output']>;
+  insertedAt?: Maybe<Scalars['Datetime']['output']>;
+  text?: Maybe<ConversationReply>;
+};
+
 export type Room = {
   __typename?: 'Room';
   id?: Maybe<Scalars['ID']['output']>;
@@ -337,6 +346,8 @@ export type RootSubscriptionType = {
   getRoomsSubscription?: Maybe<Array<Maybe<Room>>>;
   /** Get Public Notifications */
   notifications?: Maybe<Notification>;
+  /** Get Private Notifications */
+  privateNotifications?: Maybe<PrivateNotification>;
 };
 
 
@@ -425,6 +436,13 @@ export type AccessProtectedRoomMutationVariables = Exact<{
 
 
 export type AccessProtectedRoomMutation = { __typename?: 'RootMutationType', accessProtectedRoom?: boolean | null };
+
+export type CreateConversationReplyMutationVariables = Exact<{
+  input?: InputMaybe<CreateConversationReplyInput>;
+}>;
+
+
+export type CreateConversationReplyMutation = { __typename?: 'RootMutationType', createConversationReply?: { __typename?: 'ConversationReply', id: string } | null };
 
 export type GetMessagesByRoomIdQueryVariables = Exact<{
   roomId?: InputMaybe<Scalars['ID']['input']>;
@@ -655,6 +673,26 @@ export const useAccessProtectedRoomMutation = <
     useMutation<AccessProtectedRoomMutation, TError, AccessProtectedRoomMutationVariables, TContext>(
       ['accessProtectedRoom'],
       (variables?: AccessProtectedRoomMutationVariables) => fetcher<AccessProtectedRoomMutation, AccessProtectedRoomMutationVariables>(client, AccessProtectedRoomDocument, variables, headers)(),
+      options
+    );
+export const CreateConversationReplyDocument = `
+    mutation createConversationReply($input: CreateConversationReplyInput) {
+  createConversationReply(input: $input) {
+    id
+  }
+}
+    `;
+export const useCreateConversationReplyMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<CreateConversationReplyMutation, TError, CreateConversationReplyMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) =>
+    useMutation<CreateConversationReplyMutation, TError, CreateConversationReplyMutationVariables, TContext>(
+      ['createConversationReply'],
+      (variables?: CreateConversationReplyMutationVariables) => fetcher<CreateConversationReplyMutation, CreateConversationReplyMutationVariables>(client, CreateConversationReplyDocument, variables, headers)(),
       options
     );
 export const GetMessagesByRoomIdDocument = `

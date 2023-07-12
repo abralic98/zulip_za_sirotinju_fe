@@ -35,8 +35,8 @@ export const PrivateRoomList = () => {
         setData(d || []);
         const test = d.map((c) => {
           return {
-            name: getOtherUser(c, String(session?.user.id))?.name,
-            id: getOtherUser(c, String(session?.user.id))?.id,
+            name: getOtherUser(c, String(session?.user.id))?.name || '',
+            id: getOtherUser(c, String(session?.user.id))?.id || '',
             unreadMessages: 0,
           };
         });

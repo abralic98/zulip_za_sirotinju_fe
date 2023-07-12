@@ -6,31 +6,56 @@ import { Input } from "@/components/ui/input";
 import { graphqlClient } from "@/lib/graphqlClient";
 import { queryClient, QueryClientProviderA } from "@/lib/queryClientProvider";
 import {
+  CreateConversationReplyInput,
   CreateMessageInput,
+  useCreateConversationReplyMutation,
   useCreateMessageMutation,
 } from "@/src/generated/graphql";
-import React from "react";
+import React, { FC } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { useRoomsStore, useRoomStore } from "../../store/store";
+import { usePrivateRoomStore } from "../../store/privateRoomStore";
+import { useRoomStore } from "../../store/store";
 
-export const SendMessage = () => {
-  const form = useForm<CreateMessageInput>();
+interface Props {
+  type: "Public" | "Private";
+}
+export const SendMessage: FC<Props> = ({ type }) => {
+  const form = useForm<CreateMessageInput | CreateConversationReplyInput>();
 
   const sendMessageMutation = useCreateMessageMutation(graphqlClient);
+  const sendPrivateMessageMutation =
+    useCreateConversationReplyMutation(graphqlClient);
+  const conversation = usePrivateRoomStore();
   const room = useRoomStore();
 
-  const submit = async (input: CreateMessageInput) => {
-    if (!room.activeRoom) return;
-    const res = await sendMessageMutation.mutateAsync({
-      input: { ...input, roomId: room.activeRoom },
-    });
+  const submit = async (
+    input: CreateMessageInput | CreateConversationReplyInput
+  ) => {
+    if (type === "Public") {
+      if (!room.activeRoom) return;
 
-    try {
-      if (res.createMessage) {
-        form.resetField('text');
-      }
-    } catch {
-      
+      const res = await sendMessageMutation.mutateAsync({
+        input: { ...input, roomId: room.activeRoom },
+      });
+
+      try {
+        if (res.createMessage) {
+          form.resetField("text");
+        }
+      } catch {}
+    }
+    if (type === "Private") {
+      if (!conversation.activeConversation) return;
+
+      const res = await sendPrivateMessageMutation.mutateAsync({
+        input: { ...input, conversationId: conversation.activeConversation},
+      });
+
+      try {
+        if (res.createConversationReply) {
+          form.resetField("text");
+        }
+      } catch {}
     }
   };
   return (

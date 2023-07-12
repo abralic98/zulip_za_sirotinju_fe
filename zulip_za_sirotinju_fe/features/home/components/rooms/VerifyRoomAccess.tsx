@@ -12,6 +12,7 @@ import {
 import React, { Dispatch, FC, SetStateAction } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import { usePrivateRoomStore } from "../../store/privateRoomStore";
 import { useRoomsStore, useRoomStore } from "../../store/store";
 
 interface Props {
@@ -22,6 +23,7 @@ interface Props {
 export const VerifyRoomAccess: FC<Props> = ({ setOpen, open, roomId }) => {
   const form = useForm<Omit<AccessProtectedRoomMutationVariables, "roomId">>();
   const roomstore = useRoomStore();
+  const conversation = usePrivateRoomStore()
   const roomsstore = useRoomsStore()
   const accessRoom = useAccessProtectedRoomMutation(graphqlClient);
 
@@ -32,6 +34,8 @@ export const VerifyRoomAccess: FC<Props> = ({ setOpen, open, roomId }) => {
     try {
       if (res.accessProtectedRoom) {
         roomstore.setActiveRoom(roomId);
+
+            conversation.setActiveConversation(undefined);
 
         const updated = roomsstore.rooms.map((r) => {
           if (r.id === roomId) {

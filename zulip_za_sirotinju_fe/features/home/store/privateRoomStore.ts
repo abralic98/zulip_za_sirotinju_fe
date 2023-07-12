@@ -1,10 +1,15 @@
-import { Conversation } from "@/src/generated/graphql";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
 interface PrivateStore{
   activeConversation: string | undefined;
   setActiveConversation: (activeConversation: string | undefined) => void;
+}
+
+interface Conversation{
+  name: string;
+  id: string;
+  unreadMessages: number;
 }
 interface PrivateRoomsStore {
   conversations: Conversation[];

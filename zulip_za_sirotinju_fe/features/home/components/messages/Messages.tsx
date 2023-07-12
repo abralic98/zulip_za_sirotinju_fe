@@ -87,12 +87,6 @@ export const Messages = () => {
     messageContainerRef.current.scroll({ top: height });
   }, [messageContainerRef, query.isFetched]);
 
-  if (!room.activeRoom)
-    return (
-      <Box width={"1/3"} background="gray-700" color="white">
-        Join Room
-      </Box>
-    );
   return (
     <Stack
       display={"flex"}
@@ -124,7 +118,7 @@ export const Messages = () => {
           <ObservableElement ref={messagesRef} />
         </Box>
       </Box>
-      <SendMessage />
+      <SendMessage type="Public" />
     </Stack>
   );
 };

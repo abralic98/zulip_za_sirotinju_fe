@@ -5,6 +5,7 @@ import { TextBox } from "@/components/ui/TextBox";
 import { Room } from "@/src/generated/graphql";
 import { Color } from "@/styles/vars/colors";
 import React, { FC, useState } from "react";
+import { usePrivateRoomStore } from "../../store/privateRoomStore";
 import { useRoomsStore, useRoomStore } from "../../store/store";
 import { VerifyRoomAccess } from "./VerifyRoomAccess";
 
@@ -13,6 +14,7 @@ interface Props {
 }
 export const SingleRoom: FC<Props> = ({ room }) => {
   const roomstore = useRoomStore();
+  const conversation = usePrivateRoomStore()
   const roomsstore = useRoomsStore();
   const [open, setOpen] = useState(false);
   const [color, setColor] = useState<Color>("gray-600");
@@ -34,6 +36,7 @@ export const SingleRoom: FC<Props> = ({ room }) => {
           }
           if (!room.isPasswordProtected) {
             roomstore.setActiveRoom(room.id || undefined);
+            conversation.setActiveConversation(undefined);
             const updated = roomsstore.rooms.map((r) => {
               if (r.id === room.id) {
                 return {

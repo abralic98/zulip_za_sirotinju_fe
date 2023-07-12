@@ -26,3 +26,9 @@ mutation updateProfile($input: UpdateProfileInput) {
 mutation accessProtectedRoom($password: String!, $roomId: ID!) {
   accessProtectedRoom(password: $password, roomId: $roomId)
 }
+
+mutation createConversationReply($input: CreateConversationReplyInput){
+  createConversationReply(input: $input){
+    id
+  }
+}
