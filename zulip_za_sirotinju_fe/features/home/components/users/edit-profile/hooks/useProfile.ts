@@ -13,7 +13,7 @@ interface Props {
   userId?: string;
   form?: UseFormReturn<UpdateProfileInput, any>
 }
-export const useProfile = (props: Props) => {
+export const useProfile = (props?: Props) => {
   const updateProfileMutation = useUpdateProfileMutation(graphqlClient);
   const decodedId = props?.userId
     ? atob(String(props.userId)).split(":")[1]
@@ -66,5 +66,6 @@ export const useProfile = (props: Props) => {
     getOtherUserAvatar,
     isFetchingOtherAvatar,
     updateProfile,
+    decodedId
   };
 };

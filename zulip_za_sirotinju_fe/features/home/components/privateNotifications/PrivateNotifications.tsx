@@ -10,6 +10,7 @@ import {
   usePrivateRoomsStore,
   usePrivateRoomStore,
 } from "../../store/privateRoomStore";
+import { useProfile } from "../users/edit-profile/hooks";
 
 export const PrivateNotifications = () => {
   const conversation = usePrivateRoomStore();
@@ -18,8 +19,9 @@ export const PrivateNotifications = () => {
   const { data: session } = useSession();
   const [sound, setSound] = useState<HTMLAudioElement | null>(null);
   const { socket } = useSocket();
+  const {decodedId} = useProfile({userId: session?.user.id})
   const { toastSuccess } = useToast();
-  const [message, setMessage] = useState<{conversation:Conversation}>();
+  const [message, setMessage] = useState<{ conversation: Conversation }>();
 
   useEffect(() => {
     // setSound(new Audio('sounds/coin-drop.mp3'))
@@ -28,18 +30,13 @@ export const PrivateNotifications = () => {
 
   const operation = `
 subscription{
-  privateNotifications(id:1) {
+  privateNotifications(id: ${decodedId}){
     id
-    account{
-      username
-      id
-    }
-    insertedAt
-    conversation{
-      id
-    }
     conversationReply{
       text
+    }
+    account{
+      username
     }
   }
 }
@@ -52,7 +49,7 @@ subscription{
 
     const notifier = withAbsintheSocket.send(socket, {
       operation,
-      variables: { id: String(conversation.activeConversation) },
+      variables: { id: decodedId },
     });
     const absintheSocket = withAbsintheSocket.observe(socket, notifier, {
       onResult: (data) => {
@@ -61,17 +58,15 @@ subscription{
         if (kita?.account.id == session.user.id) return;
         if (kita) {
           setMessage(kita);
-          toastSuccess(
-            `${kita.account.username} sent you PM`
-          );
+          toastSuccess(`${kita.account.username} sent you PM`);
           sound?.play();
         }
       },
     });
-  }, [session?.user.token, socket]);
+  }, [session?.user.token, socket, decodedId]);
 
   useEffect(() => {
-    if (conversation.activeConversation=== message?.conversation?.id) {
+    if (conversation.activeConversation === message?.conversation?.id) {
       return;
     }
     const updated = conversations.conversations.map((r) => {

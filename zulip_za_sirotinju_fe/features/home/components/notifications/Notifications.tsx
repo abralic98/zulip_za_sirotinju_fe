@@ -18,7 +18,6 @@ export const Notifications = () => {
   const [message, setMessage] = useState<Notification>();
 
   useEffect(() => {
-    // setSound(new Audio('sounds/coin-drop.mp3'))
     setSound(new Audio("sounds/voice.mp3"));
   }, []);
 
