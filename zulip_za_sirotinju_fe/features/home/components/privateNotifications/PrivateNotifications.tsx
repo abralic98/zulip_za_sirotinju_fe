@@ -37,6 +37,7 @@ subscription{
     }
     account{
       username
+      id
     }
     conversation{
       id
@@ -60,7 +61,6 @@ subscription{
         const kita = data.data.privateNotifications;
         if (kita?.account.id == session.user.id) return;
         if (kita) {
-          setMessage(kita);
           setMessage(kita);
           toastSuccess(`${kita.account.username} sent you PM`);
           sound?.play();
