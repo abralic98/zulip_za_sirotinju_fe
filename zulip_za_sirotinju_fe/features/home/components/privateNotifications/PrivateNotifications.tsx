@@ -1,16 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRoomsStore, useRoomStore } from "../../store/store";
 import * as withAbsintheSocket from "@absinthe/socket";
 import { useSession } from "next-auth/react";
 import { useSocket } from "@/hooks/useSocket";
 import { useToast } from "@/hooks/useToast";
-import { Conversation, Message, Notification } from "@/src/generated/graphql";
+import { Conversation } from "@/src/generated/graphql";
 import {
   usePrivateRoomsStore,
   usePrivateRoomStore,
 } from "../../store/privateRoomStore";
-import { useProfile } from "../users/edit-profile/hooks";
 
 export const PrivateNotifications = () => {
   const conversation = usePrivateRoomStore();
@@ -19,7 +17,9 @@ export const PrivateNotifications = () => {
   const { data: session } = useSession();
   const [sound, setSound] = useState<HTMLAudioElement | null>(null);
   const { socket } = useSocket();
-  const {decodedId} = useProfile({userId: session?.user.id})
+  const decodedId = session?.user.id
+    ? atob(String(session.user.id)).split(":")[1]
+    : "";
   const { toastSuccess } = useToast();
   const [message, setMessage] = useState<{ conversation: Conversation }>();
 
@@ -37,6 +37,9 @@ subscription{
     }
     account{
       username
+    }
+    conversation{
+      id
     }
   }
 }
@@ -58,6 +61,7 @@ subscription{
         if (kita?.account.id == session.user.id) return;
         if (kita) {
           setMessage(kita);
+          setMessage(kita);
           toastSuccess(`${kita.account.username} sent you PM`);
           sound?.play();
         }
@@ -69,6 +73,7 @@ subscription{
     if (conversation.activeConversation === message?.conversation?.id) {
       return;
     }
+    
     const updated = conversations.conversations.map((r) => {
       if (r.id === message?.conversation?.id) {
         return {
@@ -79,7 +84,6 @@ subscription{
         return r;
       }
     });
-
     conversations.setConversations(updated);
   }, [message]);
   return null;

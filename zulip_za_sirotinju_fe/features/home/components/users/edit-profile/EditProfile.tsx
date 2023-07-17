@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { updateAccountSchema } from "@/features/home/zod";
 import { UpdateProfileInput } from "@/src/generated/graphql";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { Dispatch, FC, SetStateAction } from "react";
+import React, { Dispatch, FC, SetStateAction, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
 import { useProfile } from "./hooks/useProfile";
@@ -27,6 +27,7 @@ export const EditProfile: FC<Props> = ({ setOpen, open }) => {
   const { getUserProfile, isFetchingGet, updateProfile } = useProfile({
     form: form,
   });
+
   return (
     <Dialog setOpen={setOpen} open={open}>
       <Box

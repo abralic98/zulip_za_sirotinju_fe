@@ -15,6 +15,7 @@ import { Box } from "@/components/primitives/box/box";
 import { Heading } from "@/components/ui/Heading";
 import { Stack } from "@/components/primitives/stack";
 import Link from "next/link";
+import { LocalStorage } from "@/helpers/localStorage";
 
 export function Login() {
   const [loading, setLoading] = useState(false);
@@ -35,6 +36,7 @@ export function Login() {
         redirect: true,
         callbackUrl: routes.app,
       });
+      LocalStorage.setItem("zulip-status", "ONLINE");
     } catch {
       setLoading(false);
     }

@@ -59,7 +59,7 @@ export const SingleUser: FC<Props> = ({ account }) => {
           </Heading>
         </Box>
         {currentAccount && <UserOptions setOptions={setOptions} />}
-        {!currentAccount && <OtherUserOptions userId={account.id} />}
+        {!currentAccount && <OtherUserOptions username={account.username} userId={account.id} />}
       </Options>
     </Cluster>
   );

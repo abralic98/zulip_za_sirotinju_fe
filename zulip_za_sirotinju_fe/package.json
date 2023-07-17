@@ -53,6 +53,7 @@
     "@graphql-codegen/typescript-react-query": "^4.1.0",
     "@graphql-typed-document-node/core": "^3.2.0",
     "@tanstack/react-query-devtools": "^4.22.0",
-    "@types/absinthe__socket": "^0.2.3"
+    "@types/absinthe__socket": "^0.2.3",
+    "encoding": "^0.1.13"
   }
 }

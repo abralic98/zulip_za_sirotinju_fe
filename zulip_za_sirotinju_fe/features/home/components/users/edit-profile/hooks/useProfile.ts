@@ -13,7 +13,7 @@ interface Props {
   userId?: string;
   form?: UseFormReturn<UpdateProfileInput, any>
 }
-export const useProfile = (props?: Props) => {
+export const useProfile = (props: Props) => {
   const updateProfileMutation = useUpdateProfileMutation(graphqlClient);
   const decodedId = props?.userId
     ? atob(String(props.userId)).split(":")[1]
@@ -24,13 +24,14 @@ export const useProfile = (props?: Props) => {
     {
       select: (u) => u.me,
       onSuccess: (d) => {
-        props?.form?.reset({
+        props.form?.reset({
           username: d?.username,
           firstName: d?.firstName,
           lastName: d?.lastName,
           email: d?.email,
         });
       },
+      retryOnMount: true,
       cacheTime:0
     }
   );
@@ -66,6 +67,5 @@ export const useProfile = (props?: Props) => {
     getOtherUserAvatar,
     isFetchingOtherAvatar,
     updateProfile,
-    decodedId
   };
 };

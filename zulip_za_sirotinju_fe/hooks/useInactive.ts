@@ -6,6 +6,7 @@ import {
   useMeQuery,
   useUpdateAccountStatusMutation,
 } from "@/src/generated/graphql";
+import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
@@ -17,16 +18,6 @@ export const useInactive = () => {
   const minute = 1000 * 60;
   const updateStatusMutation = useUpdateAccountStatusMutation(graphqlClient);
   const { data: session, status } = useSession();
-  const me = useMeQuery(
-    graphqlClient,
-    {},
-    {
-      enabled: Boolean(session?.user.token),
-      onSuccess: (data) => {
-        LocalStorage.setItem("zulip-status", String(data.me?.status));
-      },
-    }
-  );
 
   const update = async (status: AccountStatus) => {
     if (!session?.user.token) return;
